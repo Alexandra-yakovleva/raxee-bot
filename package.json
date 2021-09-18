@@ -1,0 +1,30 @@
+{
+  "name": "raxee-bot",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "start": "cross-env NODE_ENV=production nodemon src/bot.ts",
+    "dev": "cross-env NODE_ENV=development nodemon src/bot.ts --watch src"
+  },
+  "dependencies": {
+    "cross-env": "^7.0.3",
+    "date-fns": "^2.24.0",
+    "dotenv-flow": "^3.2.0",
+    "nodemon": "^2.0.12",
+    "ramda": "^0.27.1",
+    "telegraf": "^4.4.2",
+    "telegraf-session-local": "^2.1.0",
+    "ts-node": "^10.2.1"
+  },
+  "devDependencies": {
+    "@types/node": "^14.17.15",
+    "@types/ramda": "^0.27.44",
+    "@typescript-eslint/eslint-plugin": "^4.31.1",
+    "@typescript-eslint/parser": "^4.31.1",
+    "eslint": "^7.32.0",
+    "eslint-plugin-fp": "^2.3.0",
+    "eslint-plugin-import": "^2.24.2",
+    "eslint-plugin-ramda": "^2.5.1",
+    "typescript": "^4.4.3"
+  }
+}
