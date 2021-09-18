@@ -1,7 +1,6 @@
 // @ts-ignore
 require('dotenv-flow').config()
 
-import * as R from 'ramda'
 import {asyncPause} from './utils/pause'
 import {ContextWithSession} from './types/session'
 import {DATE_FORMAT} from './constants/dates'
@@ -11,8 +10,8 @@ import {initSession} from './middleware/initSession'
 import LocalSession from 'telegraf-session-local'
 import {PIDOR} from './constants/messages'
 import {sendMessage} from './utils/message'
+import {sendStats} from './utils/stats'
 import {Telegraf} from 'telegraf'
-import {User} from 'typegram'
 
 const bot = new Telegraf<ContextWithSession>(process.env.BOT_TOKEN!)
 
@@ -29,7 +28,7 @@ bot.command('pidor_reg', ctx => {
   }
 
   ctx.session.pidor.users[ctx.from.id] = ctx.from
-  return sendMessage(ctx, getRandomItem(PIDOR.REG.ADDED)(ctx.from))
+  sendMessage(ctx, getRandomItem(PIDOR.REG.ADDED)(ctx.from))
 })
 
 bot.command('pidor', async ctx => {
@@ -51,44 +50,17 @@ bot.command('pidor', async ctx => {
   await asyncPause(2500)
   sendMessage(ctx, getRandomItem(PIDOR._.FOUND3))
   await asyncPause(4000)
-  return sendMessage(ctx, getRandomItem(PIDOR._.FOUND4)(ctx.session.pidor.users[randomUserId]))
+  sendMessage(ctx, getRandomItem(PIDOR._.FOUND4)(ctx.session.pidor.users[randomUserId]))
 })
 
 bot.command('pidor_stats', ctx => {
-  const stats = R.compose<
-    Record<string, number>,
-    number[],
-    Record<number, number>,
-    Array<[string, number]>,
-    Array<{user: User, count: number}>,
-    Array<{user: User, count: number}>
-  >(
-    R.sort((left, right) => right.count - left.count),
+  sendStats(ctx, ctx.session.pidor.stats, ctx.session.pidor.users)
+})
 
-    R.map(item => ({
-      count: item[1],
-      user : ctx.session.pidor.users[Number(item[0])],
-    })),
-
-    R.toPairs,
-
-    userIds => userIds.reduce<Record<number, number>>((acc, userId) => {
-      acc[userId] = acc[userId] ? acc[userId] + 1 : 1
-      return acc
-    }, {}),
-
-    R.values,
-  )(ctx.session.pidor.stats)
-
-  const statsRows = [
-    PIDOR.STATS.TITLE,
-    '',
-    ...stats.map((item, index) => PIDOR.STATS.ROW(index, item.user, item.count)),
-    '',
-    PIDOR.STATS.TOTAL(Object.keys(ctx.session.pidor.users).length),
-  ]
-
-  return sendMessage(ctx, statsRows.join('\n'))
+bot.on('message', ctx => {
+  if(ctx.from.id === ctx.session.pidor.stats[format(new Date, DATE_FORMAT)] && Math.random() < .2) {
+    sendMessage(ctx, getRandomItem(PIDOR.ON_MESSAGE.CURRENT), ctx.message.message_id)
+  }
 })
 
 bot.launch()
