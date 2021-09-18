@@ -58,7 +58,7 @@ bot.command('pidor_stats', ctx => {
 })
 
 bot.on('message', ctx => {
-  if(ctx.from.id === ctx.session.pidor.stats[format(new Date, DATE_FORMAT)] && Math.random() < .2) {
+  if(ctx.from.id === ctx.session.pidor.stats[format(new Date, DATE_FORMAT)] && Math.random() < .1) {
     sendMessage(ctx, getRandomItem(PIDOR.ON_MESSAGE.CURRENT), ctx.message.message_id)
   }
 })
