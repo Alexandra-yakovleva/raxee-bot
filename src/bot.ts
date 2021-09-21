@@ -42,15 +42,31 @@ bot.command('pidor', async ctx => {
     return sendMessage(ctx, PIDOR._.DUPLICATE(ctx.session.pidor.users[ctx.session.pidor.stats[date]]))
   }
 
-  const randomUserId = Number(getRandomItem(Object.keys(ctx.session.pidor.users)))
-  ctx.session.pidor.stats[date] = randomUserId
+  const randomUser = getRandomItem(Object.values(ctx.session.pidor.users))
+  ctx.session.pidor.stats[date] = randomUser.id
   sendMessage(ctx, getRandomItem(PIDOR._.FOUND1))
   await asyncPause(2500)
   sendMessage(ctx, getRandomItem(PIDOR._.FOUND2))
   await asyncPause(2500)
   sendMessage(ctx, getRandomItem(PIDOR._.FOUND3))
   await asyncPause(4000)
-  sendMessage(ctx, getRandomItem(PIDOR._.FOUND4)(ctx.session.pidor.users[randomUserId]))
+  sendMessage(ctx, getRandomItem(PIDOR._.FOUND4)(randomUser))
+})
+
+bot.command('pidor_dry_run', async ctx => {
+  if(!Object.keys(ctx.session.pidor.users).length) {
+    return sendMessage(ctx, PIDOR._.EMPTY)
+  }
+
+  sendMessage(ctx, 'Тестовый запуск, данные не будут сохранены')
+  const randomUser = getRandomItem(Object.values(ctx.session.pidor.users))
+  sendMessage(ctx, getRandomItem(PIDOR._.FOUND1))
+  await asyncPause(2500)
+  sendMessage(ctx, getRandomItem(PIDOR._.FOUND2))
+  await asyncPause(2500)
+  sendMessage(ctx, getRandomItem(PIDOR._.FOUND3))
+  await asyncPause(4000)
+  sendMessage(ctx, getRandomItem(PIDOR._.FOUND4)(randomUser))
 })
 
 bot.command('pidor_stats', ctx => {
