@@ -1,6 +1,7 @@
 // @ts-ignore
 require('dotenv-flow').config()
 
+import {getMessageVariant, sendMessage} from './utils/message'
 import {asyncPause} from './utils/pause'
 import {ContextWithSession} from './types/session'
 import {DATE_FORMAT} from './constants/dates'
@@ -9,7 +10,6 @@ import {getRandomItem} from './utils/random'
 import {initSession} from './middleware/initSession'
 import LocalSession from 'telegraf-session-local'
 import {PIDOR} from './constants/messages'
-import {sendMessage} from './utils/message'
 import {sendStats} from './utils/stats'
 import {Telegraf} from 'telegraf'
 
@@ -24,33 +24,34 @@ bot.use(initSession)
 
 bot.command('pidor_reg', ctx => {
   if(ctx.session.pidor.users[ctx.from.id]) {
-    return sendMessage(ctx, PIDOR.REG.DUPLICATE)
+    return sendMessage(ctx, getMessageVariant(PIDOR.REG.DUPLICATE, ctx.from))
   }
 
   ctx.session.pidor.users[ctx.from.id] = ctx.from
-  sendMessage(ctx, getRandomItem(PIDOR.REG.ADDED)(ctx.from))
+  sendMessage(ctx, getMessageVariant(PIDOR.REG.ADDED, ctx.from))
 })
 
 bot.command('pidor', async ctx => {
   if(!Object.keys(ctx.session.pidor.users).length) {
-    return sendMessage(ctx, PIDOR._.EMPTY)
+    return sendMessage(ctx, getMessageVariant(PIDOR._.EMPTY, ctx.from))
   }
 
   const date = format(new Date, DATE_FORMAT)
 
   if(ctx.session.pidor.stats[date]) {
-    return sendMessage(ctx, PIDOR._.DUPLICATE(ctx.session.pidor.users[ctx.session.pidor.stats[date]]))
+    const currentUser = ctx.session.pidor.users[ctx.session.pidor.stats[date]]
+    return sendMessage(ctx, getMessageVariant(PIDOR._.DUPLICATE, currentUser))
   }
 
   const randomUser = getRandomItem(Object.values(ctx.session.pidor.users))
   ctx.session.pidor.stats[date] = randomUser.id
-  sendMessage(ctx, getRandomItem(PIDOR._.FOUND1))
+  sendMessage(ctx, getMessageVariant(PIDOR._.FOUND1, randomUser))
   await asyncPause(2500)
-  sendMessage(ctx, getRandomItem(PIDOR._.FOUND2))
+  sendMessage(ctx, getMessageVariant(PIDOR._.FOUND2, randomUser))
   await asyncPause(2500)
-  sendMessage(ctx, getRandomItem(PIDOR._.FOUND3))
+  sendMessage(ctx, getMessageVariant(PIDOR._.FOUND3, randomUser))
   await asyncPause(4000)
-  sendMessage(ctx, getRandomItem(PIDOR._.FOUND4)(randomUser))
+  sendMessage(ctx, getMessageVariant(PIDOR._.FOUND4, randomUser))
 })
 
 bot.command('pidor_stats', ctx => {
@@ -59,7 +60,7 @@ bot.command('pidor_stats', ctx => {
 
 bot.on('message', ctx => {
   if(ctx.from.id === ctx.session.pidor.stats[format(new Date, DATE_FORMAT)] && Math.random() < .1) {
-    sendMessage(ctx, getRandomItem(PIDOR.ON_MESSAGE.CURRENT), ctx.message.message_id)
+    sendMessage(ctx, getMessageVariant(PIDOR.ON_MESSAGE.CURRENT, ctx.from), ctx.message.message_id)
   }
 })
 

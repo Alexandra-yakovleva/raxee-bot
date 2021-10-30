@@ -31,7 +31,7 @@ export const sendStats = (ctx: Context, items: Record<string, number>, users: Re
   )(items)
 
   const statsRows = [
-    PIDOR.STATS.TITLE,
+    PIDOR.STATS.TITLE(),
     '',
     ...stats.map((item, index) => PIDOR.STATS.ROW(index, item.user, item.count)),
     '',
