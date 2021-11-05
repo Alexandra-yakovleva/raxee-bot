@@ -3,8 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "start": "cross-env NODE_ENV=production nodemon src/bot.ts --watch src",
-    "dev": "cross-env NODE_ENV=development nodemon src/bot.ts --watch src"
+    "start": "ts-node src/bot.ts"
   },
   "dependencies": {
     "@types/node": "^14.17.15",
@@ -12,7 +11,6 @@
     "cross-env": "^7.0.3",
     "date-fns": "^2.24.0",
     "dotenv-flow": "^3.2.0",
-    "nodemon": "^2.0.12",
     "ramda": "^0.27.1",
     "telegraf": "^4.4.2",
     "telegraf-session-local": "^2.1.0",
