@@ -1,71 +1,115 @@
 // @ts-ignore
-require('dotenv-flow').config()
+import { format } from 'date-fns';
+import { Bot } from 'grammy';
+import * as R from 'ramda';
 
-import {getMessageVariant, sendMessage} from './utils/message'
-import {asyncPause} from './utils/pause'
-import {ContextWithSession} from './types/session'
-import {DATE_FORMAT} from './constants/dates'
-import {format} from 'date-fns'
-import {getRandomItem} from './utils/random'
-import {initSession} from './middleware/initSession'
-import LocalSession from 'telegraf-session-local'
-import {PIDOR} from './constants/messages'
-import {sendStats} from './utils/stats'
-import {Telegraf} from 'telegraf'
+import { DATE_FORMAT } from './constants/dates';
+import { errorMessage, pidorMessages } from './constants/messages';
+import { getSessionMiddleware } from './middleware/session';
+import { ContextWithSession } from './types/session';
+import { getMessageVariant } from './utils/message';
+import { asyncPause } from './utils/pause';
+import { getRandomItem } from './utils/random';
+import { getStats } from './utils/stats';
 
-const bot = new Telegraf<ContextWithSession>(process.env.BOT_TOKEN!)
+require('dotenv-flow').config();
 
-bot.use(new LocalSession({
-  database     : process.env.DB_PATH,
-  getSessionKey: ctx => String(ctx.chat?.id || ctx.from?.id || 0),
-}).middleware())
+(async () => {
+  const bot = new Bot<ContextWithSession>(process.env.BOT_TOKEN!);
+  bot.use(getSessionMiddleware());
 
-bot.use(initSession)
+  bot.command('pidor_reg', (ctx) => {
+    if (!ctx.from) {
+      return ctx.reply(errorMessage);
+    }
 
-bot.command('pidor_reg', ctx => {
-  if(ctx.session.pidor.users[ctx.from.id]) {
-    return sendMessage(ctx, getMessageVariant(PIDOR.REG.DUPLICATE, ctx.from))
-  }
+    ctx.session.pidor.users[ctx.from.id] = ctx.from;
 
-  ctx.session.pidor.users[ctx.from.id] = ctx.from
-  sendMessage(ctx, getMessageVariant(PIDOR.REG.ADDED, ctx.from))
-})
+    ctx.reply(getMessageVariant(
+      ctx.session.pidor.users[ctx.from.id] ? pidorMessages.register.duplicate : pidorMessages.register.added,
+      ctx.from,
+    ), { parse_mode: 'Markdown' });
+  });
 
-bot.command('pidor', async ctx => {
-  if(!Object.keys(ctx.session.pidor.users).length) {
-    return sendMessage(ctx, getMessageVariant(PIDOR._.EMPTY, ctx.from))
-  }
+  bot.command('pidor', async (ctx) => {
+    if (!Object.keys(ctx.session.pidor.users).length) {
+      return ctx.reply(getMessageVariant(pidorMessages._.empty, ctx.from), { parse_mode: 'Markdown' });
+    }
 
-  const date = format(new Date, DATE_FORMAT)
+    const date = format(new Date(), DATE_FORMAT);
 
-  if(ctx.session.pidor.stats[date]) {
-    const currentUser = ctx.session.pidor.users[ctx.session.pidor.stats[date]]
-    return sendMessage(ctx, getMessageVariant(PIDOR._.DUPLICATE, currentUser))
-  }
+    if (ctx.session.pidor.stats[date]) {
+      const currentUser = ctx.session.pidor.users[ctx.session.pidor.stats[date]];
+      return ctx.reply(getMessageVariant(pidorMessages._.duplicate, currentUser), { parse_mode: 'Markdown' });
+    }
 
-  const randomUser = getRandomItem(Object.values(ctx.session.pidor.users))
-  ctx.session.pidor.stats[date] = randomUser.id
-  sendMessage(ctx, getMessageVariant(PIDOR._.FOUND1, randomUser))
-  await asyncPause(2500)
-  sendMessage(ctx, getMessageVariant(PIDOR._.FOUND2, randomUser))
-  await asyncPause(2500)
-  sendMessage(ctx, getMessageVariant(PIDOR._.FOUND3, randomUser))
-  await asyncPause(4000)
-  sendMessage(ctx, getMessageVariant(PIDOR._.FOUND4, randomUser))
-})
+    const randomUser = getRandomItem(Object.values(ctx.session.pidor.users));
+    ctx.session.pidor.stats[date] = randomUser.id;
+    ctx.reply(getMessageVariant(pidorMessages._.found1, randomUser), { parse_mode: 'Markdown' });
+    await asyncPause(2500);
+    ctx.reply(getMessageVariant(pidorMessages._.found2, randomUser), { parse_mode: 'Markdown' });
+    await asyncPause(2500);
+    ctx.reply(getMessageVariant(pidorMessages._.found3, randomUser), { parse_mode: 'Markdown' });
+    await asyncPause(4000);
+    ctx.reply(getMessageVariant(pidorMessages._.found4, randomUser), { parse_mode: 'Markdown' });
 
-bot.command('pidor_stats', ctx => {
-  sendStats(ctx, ctx.session.pidor.stats, ctx.session.pidor.users)
-})
+    if (date.endsWith('12-31')) {
+      await asyncPause(10000);
+      ctx.reply(pidorMessages._.newYear(date.slice(0, 4)), { parse_mode: 'Markdown' });
+    }
+  });
 
-bot.on('message', ctx => {
-  if(ctx.from.id === ctx.session.pidor.stats[format(new Date, DATE_FORMAT)] && Math.random() < .1) {
-    sendMessage(ctx, getMessageVariant(PIDOR.ON_MESSAGE.CURRENT, ctx.from), ctx.message.message_id)
-  }
-})
+  bot.command('pidor_stats', (ctx) => {
+    const stats = getStats(ctx.session.pidor.stats, ctx.session.pidor.users);
 
-bot.launch()
+    ctx.reply([
+      pidorMessages.stats.title(),
+      '',
+      ...stats.map((item, index) => pidorMessages.stats.row(index, item.user, item.count)),
+      '',
+      pidorMessages.stats.total(Object.keys(ctx.session.pidor.users).length),
+    ].join('\n'), { parse_mode: 'Markdown' });
+  });
 
-// Enable graceful stop
-process.once('SIGINT', () => bot.stop('SIGINT'))
-process.once('SIGTERM', () => bot.stop('SIGTERM'))
+  bot.command('pidor_stats_year', (ctx) => {
+    const isCurrentYear = R.startsWith(format(new Date(), 'yyyy'));
+    const stats = getStats(R.pickBy((_, key) => isCurrentYear(key), ctx.session.pidor.stats), ctx.session.pidor.users);
+
+    ctx.reply([
+      pidorMessages.statsYear.title(),
+      '',
+      ...stats.map((item, index) => pidorMessages.statsYear.row(index, item.user, item.count)),
+      '',
+      pidorMessages.statsYear.total(Object.keys(ctx.session.pidor.users).length),
+    ].join('\n'), { parse_mode: 'Markdown' });
+  });
+
+  // TODO: https://grammy.dev/plugins/command-filter.html#plugin-summary
+  bot.command('pidor_2021', (ctx) => {
+    const stats = getStats(R.pickBy((_, key) => key.startsWith('2021'), ctx.session.pidor.stats), ctx.session.pidor.users);
+
+    if (!stats.length) {
+      return ctx.reply(errorMessage);
+    }
+
+    ctx.reply(pidorMessages._.year(stats[0].user, '2021'), { parse_mode: 'Markdown' });
+  });
+
+  bot.on('message', (ctx) => {
+    if (ctx.from.id === ctx.session.pidor.stats[format(new Date(), DATE_FORMAT)] && Math.random() < 0.1) {
+      ctx.reply(getMessageVariant(pidorMessages.onMessage.current, ctx.from), {
+        parse_mode: 'Markdown',
+        reply_to_message_id: ctx.message.message_id,
+      });
+    }
+  });
+
+  bot.start();
+
+  await bot.api.setMyCommands([
+    { command: 'pidor', description: 'Определить пидора дня' },
+    { command: 'pidor_reg', description: 'Стать участником пидора дня' },
+    { command: 'pidor_stats', description: 'Посмотреть статистику пидора дня' },
+    { command: 'pidor_stats_year', description: 'Посмотреть статистику пидора дня за текущий год' },
+  ]);
+})();

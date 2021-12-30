@@ -1,22 +1,23 @@
-/* eslint-disable max-len */
-import {getMention, getUserName} from '../utils/user'
-import {buildMessageVariants} from '../utils/message'
-import {getPidor} from '../utils/i18n'
-import {User} from 'typegram'
+/* eslint-disable no-irregular-whitespace */
+import { User } from 'grammy/out/platform.node';
 
-export const ERROR = 'Что-то пошло не так ¯\_(ツ)_/¯'
+import { getPidor } from '../utils/i18n';
+import { buildMessageStatsVariant, buildMessageVariants } from '../utils/message';
+import { getMention, getUserName } from '../utils/user';
 
-export const PIDOR = {
+export const errorMessage = 'Что-то пошло не так ¯\\_(ツ)_/¯';
+
+export const pidorMessages = {
   _: {
-    DUPLICATE: buildMessageVariants([
-      (user: User) => `По моей информации, *${getPidor(1, 1)} дня* \u2013 ${getMention(user)}`,
+    duplicate: buildMessageVariants([
+      (user) => `По моей информации, *${getPidor(1, 1)} дня* \u2013 ${getMention(user)}`,
     ]),
 
-    EMPTY: buildMessageVariants([
+    empty: buildMessageVariants([
       () => 'Не объявлен список кандидатов',
     ]),
 
-    FOUND1: buildMessageVariants([
+    found1: buildMessageVariants([
       () => '### RUNNING \'TYPIDOR.SH\'...',
       () => 'Woop-woop! That\'s the sound of da pidor-police!',
       () => `Инициирую поиск *${getPidor(2, 1)} дня*...`,
@@ -24,14 +25,14 @@ export const PIDOR = {
       () => 'Зачем вы меня разбудили...',
       () => 'Кто сегодня счастливчик?',
       () => 'Опять в эти ваши игрульки играете? Ну ладно...',
-      () => `Осторожно! *${getPidor(1, 1, {capitalize: true})} дня* активирован!`,
+      () => `Осторожно! *${getPidor(1, 1, { capitalize: true })} дня* активирован!`,
       () => 'Сейчас поколдуем...',
       () => 'Система взломана. Нанесён урон. Запущено планирование контрмер.',
       () => 'Что тут у нас?',
       () => 'Эй, зачем разбудили...',
     ]),
 
-    FOUND2: buildMessageVariants([
+    found2: buildMessageVariants([
       () => '_(Ворчит) А могли бы на работе делом заниматься_',
       () => '_Ведётся поиск в базе данных_',
       () => '_Военный спутник запущен, коды доступа внутри..._',
@@ -46,7 +47,7 @@ export const PIDOR = {
       () => 'Ну давай, посмотрим кто тут классный...',
     ]),
 
-    FOUND3: buildMessageVariants([
+    found3: buildMessageVariants([
       () => 'В этом совершенно нет смысла...',
       () => 'Ведётся захват подозреваемого...',
       () => 'Высокий приоритет мобильному юниту.',
@@ -63,28 +64,31 @@ export const PIDOR = {
       () => 'Я в опасности, системы повреждены!',
     ]),
 
-    FOUND4: buildMessageVariants([
-      (user: User) => `.∧＿∧ \n( ･ω･｡)つ━☆・\\*。 \n⊂　 ノ 　　　・゜+. \nしーＪ　　　°。+ \\*´¨) \n　　　　　　　　　.· ´¸.·\\*´¨) \n　　　　　　　　　　(¸.·´ (¸.·'\\* ☆ ВЖУХ И ТЫ ${getPidor(1, 1, {uppercase: true})}, ${getMention(user)}`,
-      (user: User) => `*${getPidor(1, 1, {capitalize: true})} дня* обыкновенный, 1шт. \u2013 ${getMention(user)}`,
-      (user: User) => `Ага! Поздравляю! Сегодня *ты ${getPidor(1, 1)}* \u2013 ${getMention(user)}`,
-      (user: User) => `Анализ завершен. *Ты ${getPidor(1, 1)}*, ${getMention(user)}`,
-      (user: User) => `Кажется, *${getPidor(1, 1)} дня* \u2013 ${getMention(user)}`,
-      (user: User) => `И прекрасный человек дня сегодня... а нет, ошибка, всего-лишь *${getPidor(1, 1)}* \u2013 ${getMention(user)}`,
-      (user: User) => `Кто бы мог подумать, но *${getPidor(1, 1)} дня* \u2013 ${getMention(user)}`,
-      (user: User) => `Кто тут у нас *${getPidor(1, 1)} дня*? Ты *${getPidor(1, 1)} дня* \u2013 ${getMention(user)}`,
-      (user: User) => `Ну ты и *${getPidor(1, 1)}*, ${getMention(user)}`,
-      (user: User) => `Няшный *${getPidor(1, 1)} дня* \u2013 ${getMention(user)}`,
-      (user: User) => `Ого, вы посмотрите только! А *${getPidor(1, 1)} дня* то \u2013 ${getMention(user)}`,
-      (user: User) => `Стоять! Не двигаться! Вы объявлены *${getPidor(5, 1)} дня*, ${getMention(user)}`,
-      (user: User) => `Что? Где? Когда? А ты *${getPidor(1, 1)} дня* \u2013 ${getMention(user)}`,
+    found4: buildMessageVariants([
+      (user) => `.∧＿∧ \n( ･ω･｡)つ━☆・\\*。 \n⊂　 ノ 　　　・゜+. \nしーＪ　　　°。+ \\*´¨) \n　　　　　　　　　.· ´¸.·\\*´¨) \n　　　　　　　　　　(¸.·´ (¸.·'\\* ☆ ВЖУХ И ТЫ ${getPidor(1, 1, { uppercase: true })}, ${getMention(user)}`,
+      (user) => `*${getPidor(1, 1, { capitalize: true })} дня* обыкновенный, 1шт. \u2013 ${getMention(user)}`,
+      (user) => `Ага! Поздравляю! Сегодня *ты ${getPidor(1, 1)}* \u2013 ${getMention(user)}`,
+      (user) => `Анализ завершен. *Ты ${getPidor(1, 1)}*, ${getMention(user)}`,
+      (user) => `Кажется, *${getPidor(1, 1)} дня* \u2013 ${getMention(user)}`,
+      (user) => `И прекрасный человек дня сегодня... а нет, ошибка, всего-лишь *${getPidor(1, 1)}* \u2013 ${getMention(user)}`,
+      (user) => `Кто бы мог подумать, но *${getPidor(1, 1)} дня* \u2013 ${getMention(user)}`,
+      (user) => `Кто тут у нас *${getPidor(1, 1)} дня*? Ты *${getPidor(1, 1)} дня* \u2013 ${getMention(user)}`,
+      (user) => `Ну ты и *${getPidor(1, 1)}*, ${getMention(user)}`,
+      (user) => `Няшный *${getPidor(1, 1)} дня* \u2013 ${getMention(user)}`,
+      (user) => `Ого, вы посмотрите только! А *${getPidor(1, 1)} дня* то \u2013 ${getMention(user)}`,
+      (user) => `Стоять! Не двигаться! Вы объявлены *${getPidor(5, 1)} дня*, ${getMention(user)}`,
+      (user) => `Что? Где? Когда? А ты *${getPidor(1, 1)} дня* \u2013 ${getMention(user)}`,
     ]),
+
+    newYear: (year: string) => `Чуть не забыл.. *С Новым Годом, ${getPidor(1, 2)}!*\nУзнай кто _победил_: /pidor\\_${year}`,
+    year: (user: User, year: string) => `*Пидор ${year} года* \u2013 ${getMention(user)}`,
   },
 
-  ON_MESSAGE: {
-    CURRENT: buildMessageVariants([
-      () => `${getPidor(3, 2, {capitalize: true})} слова не давали!`,
+  onMessage: {
+    current: buildMessageVariants([
+      () => `${getPidor(3, 2, { capitalize: true })} слова не давали!`,
       () => `Кстати, ты сегодня ${getPidor(1, 1)} :)`,
-      () => `${getPidor(2, 1, {capitalize: true})} ответ`,
+      () => `${getPidor(2, 1, { capitalize: true })} ответ`,
       () => `Стоп, а когда у ${getPidor(2, 2)} появилось право слова?`,
       () => 'ДЖИГУРДА!!11',
       () => 'Не забывай о своем статусе! ПИДОООР',
@@ -104,21 +108,27 @@ export const PIDOR = {
     ]),
   },
 
-  REG: {
-    ADDED: buildMessageVariants([
+  register: {
+    added: buildMessageVariants([
       () => 'Ты в игре, *сучка*',
       () => 'Скоро и до тебя доберемся',
-      (user: User) => `*PREPAREURANUS*, ${getMention(user)}`,
+      (user) => `*PREPAREURANUS*, ${getMention(user)}`,
     ]),
 
-    DUPLICATE: buildMessageVariants([
+    duplicate: buildMessageVariants([
       () => 'Молния не бьет дважды в одно место',
     ]),
   },
 
-  STATS: {
-    ROW  : (index: number, user: User, count: number) => `*${index + 1}.* ${getUserName(user)} \u2013 _${count} раз(а)_`,
-    TITLE: () => `Встречайте топовых *${getPidor(2, 2)}*:`,
-    TOTAL: (count: number) => `Всего участников \u2013 _${count}_`,
-  },
-}
+  stats: buildMessageStatsVariant({
+    row: (index, user, count) => `*${index + 1}.* ${getUserName(user)} \u2013 _${count} раз(а)_`,
+    title: () => `Встречайте топовых *${getPidor(2, 2)}*:`,
+    total: (count) => `Всего участников \u2013 _${count}_`,
+  }),
+
+  statsYear: buildMessageStatsVariant({
+    row: (index, user, count) => `*${index + 1}.* ${getUserName(user)} \u2013 _${count} раз(а)_`,
+    title: () => `Встречайте топовых *${getPidor(2, 2)}* этого года:`,
+    total: (count) => `Всего участников \u2013 _${count}_`,
+  }),
+};

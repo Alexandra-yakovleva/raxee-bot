@@ -13,5 +13,5 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# bot session
-db.json
+# db
+/db

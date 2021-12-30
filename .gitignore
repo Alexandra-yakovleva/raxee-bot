@@ -14,5 +14,5 @@ yarn-error.log*
 # local env files
 .env
 
-# bot session
-db.json
+# db
+/db
