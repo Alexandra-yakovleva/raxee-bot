@@ -3,8 +3,6 @@ version: "3.8"
 services:
   bot:
     build: .
-    ports:
-      - "3000:3000"
     volumes:
-      - $PWD/db.json:/app/db.json
+      - $PWD/db:/app/db
     restart: always
