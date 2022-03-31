@@ -1,5 +1,5 @@
-import { User } from 'grammy/out/platform.node';
 import { Context, SessionFlavor } from 'grammy';
+import { User } from 'grammy/out/platform.node';
 
 export type Pidor = {
   stats: Record<string, number>
