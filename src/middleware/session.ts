@@ -3,11 +3,9 @@ import path from 'path';
 import { FileAdapter } from '@satont/grammy-file-storage';
 import { MiddlewareFn, session } from 'grammy';
 
-import { ContextWithSession } from '../types/session';
+import { CustomContext } from '../types/context';
 
-export const getSessionMiddleware = (): MiddlewareFn<ContextWithSession> => session({
-  getSessionKey: (ctx) => String(ctx.chat?.id || ctx.from?.id || 0),
-
+export const getSessionMiddleware = (): MiddlewareFn<CustomContext> => session({
   initial: () => ({
     pidor: {
       stats: {},

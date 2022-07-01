@@ -1,15 +1,66 @@
-/* eslint-disable no-irregular-whitespace */
+/* eslint-disable max-len, no-irregular-whitespace */
 import { User } from 'grammy/out/platform.node';
 
-import { getPidor } from '../../utils/i18n';
+import { isFirstApril, isHalloween } from '../../utils/date';
 import { buildMessageVariants } from '../../utils/message';
 import { buildPidorStatsMessageVariant } from '../../utils/pidor';
 import { getMention, getUserName } from '../../utils/user';
 
+const pidor = [
+  ['пидор', 'пидоры'],
+  ['пидора', 'пидоров'],
+  ['пидору', 'пидорам'],
+  ['пидора', 'пидоров'],
+  ['пидором', 'пидорами'],
+  ['пидоре', 'пидорах'],
+];
+
+const pumpkin = [
+  ['тыковка', 'тыковки'],
+  ['тыковки', 'тыковок'],
+  ['тыковке', 'тыковкам'],
+  ['тыковку', 'тыковки'],
+  ['тыковкой', 'тыковками'],
+  ['тыковке', 'тыковках'],
+];
+
+export const getPidor = (role: 1 | 2 | 3 | 4 | 5 | 6, count: 1 | 2, opts: {
+  capitalize?: boolean
+  uppercase?: boolean
+} = {}) => {
+  let translation = pidor;
+
+  if (isHalloween()) {
+    translation = pumpkin;
+  }
+
+  let text = translation[role - 1][count - 1];
+
+  if (opts.capitalize) {
+    text = text[0].toUpperCase() + text.slice(1);
+  }
+
+  if (opts.uppercase) {
+    text = text.toUpperCase();
+  }
+
+  return text;
+};
+
+export const getDay = () => {
+  let text = 'дня';
+
+  if (isFirstApril()) {
+    text = 'часа';
+  }
+
+  return text;
+};
+
 export const pidorMessages = {
   _: {
     duplicate: buildMessageVariants([
-      (user) => `По моей информации, *${getPidor(1, 1)} дня* \u2013 ${getMention(user)}`,
+      (user) => `По моей информации, *${getPidor(1, 1)} ${getDay()}* \u2013 ${getMention(user)}`,
     ]),
 
     empty: buildMessageVariants([
@@ -19,12 +70,12 @@ export const pidorMessages = {
     found1: buildMessageVariants([
       () => '### RUNNING \'TYPIDOR.SH\'...',
       () => 'Woop-woop! That\'s the sound of da pidor-police!',
-      () => `Инициирую поиск *${getPidor(2, 1)} дня*...`,
-      () => `Итак... кто же ${getPidor(1, 1)} дня?`,
+      () => `Инициирую поиск *${getPidor(2, 1)} ${getDay()}*...`,
+      () => `Итак... кто же ${getPidor(1, 1)} ${getDay()}?`,
       () => 'Зачем вы меня разбудили...',
       () => 'Кто счастливчик?',
       () => 'Опять в эти ваши игрульки играете? Ну ладно...',
-      () => `Осторожно! *${getPidor(1, 1, { capitalize: true })} дня* активирован!`,
+      () => `Осторожно! *${getPidor(1, 1, { capitalize: true })} ${getDay()}* активирован!`,
       () => 'Сейчас поколдуем...',
       () => 'Система взломана. Нанесён урон. Запущено планирование контрмер.',
       () => 'Что тут у нас?',
@@ -65,18 +116,18 @@ export const pidorMessages = {
 
     found4: buildMessageVariants([
       (user) => `.∧＿∧ \n( ･ω･｡)つ━☆・\\*。 \n⊂　 ノ 　　　・゜+. \nしーＪ　　　°。+ \\*´¨) \n　　　　　　　　　.· ´¸.·\\*´¨) \n　　　　　　　　　　(¸.·´ (¸.·'\\* ☆ ВЖУХ И ТЫ ${getPidor(1, 1, { uppercase: true })}, ${getMention(user)}`,
-      (user) => `*${getPidor(1, 1, { capitalize: true })} дня* обыкновенный, 1шт. \u2013 ${getMention(user)}`,
+      (user) => `*${getPidor(1, 1, { capitalize: true })} ${getDay()}* обыкновенный, 1шт. \u2013 ${getMention(user)}`,
       (user) => `Ага! Поздравляю! *Ты ${getPidor(1, 1)}* \u2013 ${getMention(user)}`,
       (user) => `Анализ завершен. *Ты ${getPidor(1, 1)}*, ${getMention(user)}`,
-      (user) => `Кажется, *${getPidor(1, 1)} дня* \u2013 ${getMention(user)}`,
-      (user) => `И прекрасный человек дня... а нет, ошибка, всего-лишь *${getPidor(1, 1)}* \u2013 ${getMention(user)}`,
-      (user) => `Кто бы мог подумать, но *${getPidor(1, 1)} дня* \u2013 ${getMention(user)}`,
-      (user) => `Кто тут у нас *${getPidor(1, 1)} дня*? Ты *${getPidor(1, 1)} дня* \u2013 ${getMention(user)}`,
+      (user) => `Кажется, *${getPidor(1, 1)} ${getDay()}* \u2013 ${getMention(user)}`,
+      (user) => `И прекрасный человек ${getDay()}... а нет, ошибка, всего-лишь *${getPidor(1, 1)}* \u2013 ${getMention(user)}`,
+      (user) => `Кто бы мог подумать, но *${getPidor(1, 1)} ${getDay()}* \u2013 ${getMention(user)}`,
+      (user) => `Кто тут у нас *${getPidor(1, 1)} ${getDay()}*? Ты *${getPidor(1, 1)} ${getDay()}* \u2013 ${getMention(user)}`,
       (user) => `Ну ты и *${getPidor(1, 1)}*, ${getMention(user)}`,
-      (user) => `Няшный *${getPidor(1, 1)} дня* \u2013 ${getMention(user)}`,
-      (user) => `Ого, вы посмотрите только! А *${getPidor(1, 1)} дня* то \u2013 ${getMention(user)}`,
-      (user) => `Стоять! Не двигаться! Вы объявлены *${getPidor(5, 1)} дня*, ${getMention(user)}`,
-      (user) => `Что? Где? Когда? А ты *${getPidor(1, 1)} дня* \u2013 ${getMention(user)}`,
+      (user) => `Няшный *${getPidor(1, 1)} ${getDay()}* \u2013 ${getMention(user)}`,
+      (user) => `Ого, вы посмотрите только! А *${getPidor(1, 1)} ${getDay()}* то \u2013 ${getMention(user)}`,
+      (user) => `Стоять! Не двигаться! Вы объявлены *${getPidor(5, 1)} ${getDay()}*, ${getMention(user)}`,
+      (user) => `Что? Где? Когда? А ты *${getPidor(1, 1)} ${getDay()}* \u2013 ${getMention(user)}`,
     ]),
 
     newYear: (year: string) => `Чуть не забыл.. *С Новым Годом, ${getPidor(1, 2)}!*\nУзнай кто _победил_: /pidor\\_${year}`,
@@ -93,7 +144,7 @@ export const pidorMessages = {
       () => 'Не забывай о своем статусе! ПИДОООР',
       () => 'Крепостное право отменили в 1861 году, а твои права даже не вводили',
       () => 'Что ты делаешь вечером?',
-      () => `Какая честь видеть в этом чате ${getPidor(2, 2)} дня!`,
+      () => `Какая честь видеть в этом чате ${getPidor(2, 2)} ${getDay()}!`,
       () => `Я бы на твоем месте уже ливнул с позором из чатика, ${getPidor(1, 1)}`,
       () => 'О, а ты что, еще здесь?',
       () => 'А какого размера твой АНУС?))',
