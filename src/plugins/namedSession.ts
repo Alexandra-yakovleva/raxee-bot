@@ -1,6 +1,15 @@
-import { Context, MemorySessionStorage, MiddlewareFn, SessionOptions } from 'grammy';
+import { Context, MemorySessionStorage, MiddlewareFn, StorageAdapter } from 'grammy';
 
-export const namedSession = <K extends string, S, C extends Context>(name: K, options: SessionOptions<S> = {}): MiddlewareFn<C & Record<K, S>> => {
+type MaybePromise<T> = Promise<T> | T;
+
+interface NamedSessionOptions<C extends Context, K extends keyof C> {
+  name: K
+  initial?: () => C[K]
+  getSessionKey?: (ctx: C) => MaybePromise<string | undefined>
+  storage?: StorageAdapter<C[K]>
+}
+
+export const namedSession = <C extends Context, K extends keyof C>(options: NamedSessionOptions<C, K>): MiddlewareFn<C> => {
   const getSessionKey = options.getSessionKey ?? ((ctx) => ctx.chat?.id.toString());
   const storage = options.storage ?? new MemorySessionStorage();
 
@@ -15,13 +24,9 @@ export const namedSession = <K extends string, S, C extends Context>(name: K, op
 
   return async (ctx, next) => {
     const key = await getSessionKey(ctx);
-    let value: S | undefined;
+    let value = key === undefined ? undefined : (await storage.read(key)) ?? options.initial?.();
 
-    if (key !== undefined) {
-      value = (await storage.read(key)) ?? options.initial?.();
-    }
-
-    Object.defineProperty(ctx, name, {
+    Object.defineProperty(ctx, options.name, {
       enumerable: true,
       get() {
         assertNonUndefinedKey(key, 'access');
