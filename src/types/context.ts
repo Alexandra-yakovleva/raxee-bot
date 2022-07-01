@@ -1,7 +1,7 @@
-import { Context, SessionFlavor } from 'grammy';
+import { Context } from 'grammy';
 
-import { ReplyWithMarkdown } from '../plugins/replyWithMarkdown';
+import { ReplyWithMarkdownFlavour } from '../plugins/replyWithMarkdown';
 
-import { SessionData } from './session';
+import { PidorState } from './pidor';
 
-export type CustomContext = Context & ReplyWithMarkdown & SessionFlavor<SessionData>;
+export type CustomContext = Context & ReplyWithMarkdownFlavour & { pidor: PidorState };

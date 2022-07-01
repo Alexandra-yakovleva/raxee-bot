@@ -22,6 +22,7 @@ module.exports = {
     'import/prefer-default-export': 'off',
     'max-len': ['error', 200],
     'no-promise-executor-return': 'off',
+    'object-curly-newline': 'off',
 
     'sort-imports': ['error', {
       ignoreCase: true,

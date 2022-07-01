@@ -14,21 +14,21 @@ export const getPidorModule = () => {
   const bot = new Composer<CustomContext>();
 
   bot.command('pidor', async (ctx) => {
-    if (!Object.keys(ctx.session.pidor.users).length) {
+    if (!Object.keys(ctx.pidor.users).length) {
       await ctx.replyWithMarkdown(getMessageVariant(pidorMessages._.empty, ctx.from));
       return;
     }
 
     const date = getCurrentDate();
 
-    if (ctx.session.pidor.stats[date]) {
-      const currentUser = ctx.session.pidor.users[ctx.session.pidor.stats[date]];
+    if (ctx.pidor.stats[date]) {
+      const currentUser = ctx.pidor.users[ctx.pidor.stats[date]];
       await ctx.replyWithMarkdown(getMessageVariant(pidorMessages._.duplicate, currentUser));
       return;
     }
 
-    const randomUser = getRandomItem(Object.values(ctx.session.pidor.users));
-    ctx.session.pidor.stats[date] = randomUser.id;
+    const randomUser = getRandomItem(Object.values(ctx.pidor.users));
+    ctx.pidor.stats[date] = randomUser.id;
     await ctx.replyWithMarkdown(getMessageVariant(pidorMessages._.found1, randomUser));
     await asyncPause(2500);
     await ctx.replyWithMarkdown(getMessageVariant(pidorMessages._.found2, randomUser));
@@ -49,9 +49,9 @@ export const getPidorModule = () => {
       return;
     }
 
-    const alreadyRegistered = Boolean(ctx.session.pidor.users[ctx.from.id]);
+    const alreadyRegistered = Boolean(ctx.pidor.users[ctx.from.id]);
 
-    ctx.session.pidor.users[ctx.from.id] = ctx.from;
+    ctx.pidor.users[ctx.from.id] = ctx.from;
 
     await ctx.replyWithMarkdown(getMessageVariant(
       alreadyRegistered ? pidorMessages.register.duplicate : pidorMessages.register.added,
@@ -60,33 +60,33 @@ export const getPidorModule = () => {
   });
 
   bot.command('pidor_stats', async (ctx) => {
-    const stats = getPidorStats(ctx.session.pidor.stats, ctx.session.pidor.users);
+    const stats = getPidorStats(ctx.pidor.stats, ctx.pidor.users);
 
     await ctx.replyWithMarkdown([
       pidorMessages.stats.title(),
       '',
       ...stats.map((item, index) => pidorMessages.stats.row(index, item.user, item.count)),
       '',
-      pidorMessages.stats.total(Object.keys(ctx.session.pidor.users).length),
+      pidorMessages.stats.total(Object.keys(ctx.pidor.users).length),
     ].join('\n'));
   });
 
   bot.command('pidor_stats_year', async (ctx) => {
     const isCurrentYear = R.startsWith(format(new Date(), 'yyyy'));
-    const stats = getPidorStats(R.pickBy((_, key) => isCurrentYear(key), ctx.session.pidor.stats), ctx.session.pidor.users);
+    const stats = getPidorStats(R.pickBy((_, key) => isCurrentYear(key), ctx.pidor.stats), ctx.pidor.users);
 
     await ctx.replyWithMarkdown([
       pidorMessages.statsYear.title(),
       '',
       ...stats.map((item, index) => pidorMessages.statsYear.row(index, item.user, item.count)),
       '',
-      pidorMessages.statsYear.total(Object.keys(ctx.session.pidor.users).length),
+      pidorMessages.statsYear.total(Object.keys(ctx.pidor.users).length),
     ].join('\n'));
   });
 
   // TODO: https://grammy.dev/plugins/command-filter.html
   bot.command('pidor_2021', async (ctx) => {
-    const stats = getPidorStats(R.pickBy((_, key) => key.startsWith('2021'), ctx.session.pidor.stats), ctx.session.pidor.users);
+    const stats = getPidorStats(R.pickBy((_, key) => key.startsWith('2021'), ctx.pidor.stats), ctx.pidor.users);
 
     if (!stats.length) {
       await ctx.replyWithMarkdown(errorMessage);
@@ -97,7 +97,7 @@ export const getPidorModule = () => {
   });
 
   bot.on('message', async (ctx, next) => {
-    if (ctx.from.id === ctx.session.pidor.stats[getCurrentDate()] && Math.random() < 0.1) {
+    if (ctx.from.id === ctx.pidor.stats[getCurrentDate()] && Math.random() < 0.1) {
       await ctx.replyWithMarkdown(getMessageVariant(pidorMessages.onMessage.current, ctx.from), { reply_to_message_id: ctx.message.message_id });
     }
 

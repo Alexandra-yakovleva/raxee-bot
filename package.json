@@ -7,7 +7,7 @@
     "lint": "eslint --ext .js,.ts --ignore-path .eslintignore ."
   },
   "dependencies": {
-    "@satont/grammy-file-storage": "^1.2.0",
+    "@grammyjs/storage-file": "^2.0.0",
     "axios": "^0.27.2",
     "cross-env": "^7.0.3",
     "date-fns": "^2.28.0",
