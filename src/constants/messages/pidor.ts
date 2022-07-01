@@ -1,11 +1,10 @@
 /* eslint-disable no-irregular-whitespace */
 import { User } from 'grammy/out/platform.node';
 
-import { getPidor } from '../utils/i18n';
-import { buildMessageStatsVariant, buildMessageVariants } from '../utils/message';
-import { getMention, getUserName } from '../utils/user';
-
-export const errorMessage = 'Что-то пошло не так ¯\\_(ツ)_/¯';
+import { getPidor } from '../../utils/i18n';
+import { buildMessageVariants } from '../../utils/message';
+import { buildPidorStatsMessageVariant } from '../../utils/pidor';
+import { getMention, getUserName } from '../../utils/user';
 
 export const pidorMessages = {
   _: {
@@ -120,13 +119,13 @@ export const pidorMessages = {
     ]),
   },
 
-  stats: buildMessageStatsVariant({
+  stats: buildPidorStatsMessageVariant({
     row: (index, user, count) => `*${index + 1}.* ${getUserName(user)} \u2013 _${count} раз(а)_`,
     title: () => `Встречайте топовых *${getPidor(2, 2)}*:`,
     total: (count) => `Всего участников \u2013 _${count}_`,
   }),
 
-  statsYear: buildMessageStatsVariant({
+  statsYear: buildPidorStatsMessageVariant({
     row: (index, user, count) => `*${index + 1}.* ${getUserName(user)} \u2013 _${count} раз(а)_`,
     title: () => `Встречайте топовых *${getPidor(2, 2)}* этого года:`,
     total: (count) => `Всего участников \u2013 _${count}_`,

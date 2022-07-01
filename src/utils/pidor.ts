@@ -1,7 +1,30 @@
+import { Context } from 'grammy';
 import { User } from 'grammy/out/platform.node';
 import * as R from 'ramda';
 
-export const getStats = (
+import { PidorStatsMessageVariant } from '../types/pidor';
+
+import { isFirstApril } from './date';
+
+export const buildPidorStatsMessageVariant = (statsVariant: PidorStatsMessageVariant) => statsVariant;
+
+export const sendPidorMessage = async (ctx: Context, text: string, reply_to_message_id?: number) => {
+  if (isFirstApril()) {
+    // eslint-disable-next-line no-param-reassign
+    text = text.replace(/дня/g, 'часа');
+  }
+
+  await ctx.reply(
+    text,
+    {
+      parse_mode: 'Markdown',
+      reply_markup: { remove_keyboard: true },
+      reply_to_message_id,
+    },
+  );
+};
+
+export const getPidorStats = (
   items: Record<string, number>,
   users: Record<string, User>,
 ) => {
