@@ -3,7 +3,7 @@ import * as R from 'ramda';
 
 import { pokerMessages } from '../constants/messages';
 import { pokerStrings } from '../constants/poker';
-import { PokerLastAction, PokerPlayer, PokerRootState, PokerState } from '../types/poker';
+import { PokerPlayer, PokerRootState, PokerState } from '../types/poker';
 import { shuffleItems } from '../utils/random';
 
 import { ReplyWithMarkdownFlavour } from './replyWithMarkdown';
@@ -131,47 +131,35 @@ export class Poker {
           pokerStrings.allIn,
         ].filter(Boolean) as string[],
       );
-
-      if (callAmount > player.balance) {
-        keyboard.push(
-          [this.baseBet, this.baseBet * 2, this.bankAmount]
-            .map((amount) => pokerStrings.raise(Math.max(amount + callAmount, player.balance)))
-            .filter((item, index, array) => array.indexOf(item) === index),
-        );
-      }
     }
 
     return keyboard;
   }
 
-  private async sendMessageToPlayer(player: PokerPlayer, message: string, keyboard?: string[][]) {
+  private async sendMessageToPlayer(player: PokerPlayer, message: string, keyboard?: string[][] | null) {
     await this.ctx.api.sendMessage(
       player.user.id,
       message,
       {
         parse_mode: 'MarkdownV2',
-        reply_markup: keyboard ? { keyboard } : { remove_keyboard: true },
+        ...keyboard && { reply_markup: { keyboard } },
+        ...keyboard === null && { reply_markup: { remove_keyboard: true } },
       },
     );
   }
 
-  private async setKeyboards(lastAction?: PokerLastAction) {
+  private async setKeyboards() {
     await Promise.all(
       this.ctx.pokerState.players.map(async (player, index) => {
         const isActive = index === this.ctx.pokerState.activePlayerIndex;
 
-        const message = [
-          lastAction && lastAction.user.id !== player.user.id && pokerMessages._.lastAction(lastAction),
-          isActive ? pokerMessages._.yourTurn : pokerMessages._.userTurn(this.activePlayer.user),
-        ].filter(Boolean).join('\n');
-
-        await this.sendMessageToPlayer(player, message, this.getKeyboardForPlayer(player, isActive));
+        await this.sendMessageToPlayer(
+          player,
+          isActive ? pokerMessages.onMessage.yourTurn : pokerMessages.onMessage.userTurn(this.activePlayer.user),
+          this.getKeyboardForPlayer(player, isActive),
+        );
       }),
     );
-  }
-
-  private async removeKeyboards(message: string) {
-    await Promise.all(this.ctx.pokerState.players.map((player) => this.sendMessageToPlayer(player, message)));
   }
 
   async register() {
@@ -210,6 +198,7 @@ export class Poker {
       balance: 1000,
       bet: 0,
       cards: [],
+      isFold: false,
       user: this.ctx.from,
     });
 
@@ -233,23 +222,83 @@ export class Poker {
     await this.ctx.replyWithMarkdown(pokerMessages.start.done);
   }
 
+  private async broadcastMessage() {
+    const message = pokerMessages.onMessage.lastAction(this.ctx.from!, this.ctx.message!.text!);
+
+    await Promise.all(this.ctx.pokerState.players.map(async (player) => {
+      if (this.ctx.from?.id !== player.user.id) {
+        await this.sendMessageToPlayer(player, message);
+      }
+    }));
+  }
+
+  private async nextTurn() {
+    this.ctx.pokerState.activePlayerIndex += 1;
+    this.ctx.pokerState.activePlayerIndex %= this.ctx.pokerState.players.length;
+    await this.broadcastMessage();
+    await this.setKeyboards();
+  }
+
   async handleMessage() {
-    if (this.chatId === undefined) {
-      return;
+    if (this.ctx.from?.id !== this.activePlayer.user.id) {
+      await this.ctx.replyWithMarkdown(pokerMessages.onMessage.wrongTurn);
+      await this.broadcastMessage();
     }
 
-    if (!this.ctx.message?.text) {
-      throw new Error('ctx.message.text is empty');
-    }
+    if (this.ctx.from?.id === this.activePlayer.user.id) {
+      switch (this.ctx.message?.text) {
+        case pokerStrings.fold: {
+          this.activePlayer.isFold = true;
 
-    if (!this.ctx.from) {
-      throw new Error('ctx.from is empty');
-    }
+          await this.nextTurn();
+          break;
+        }
 
-    await this.setKeyboards({
-      message: this.ctx.message.text,
-      user: this.ctx.from,
-    });
+        case pokerStrings.check: {
+          if (this.topBet - this.activePlayer.bet > 0) {
+            await this.ctx.replyWithMarkdown(pokerMessages.onMessage.checkIsNotAllowed);
+            break;
+          }
+
+          await this.nextTurn();
+          break;
+        }
+
+        case pokerStrings.allIn: {
+          this.ctx.pokerState.isAllIn = true;
+          this.activePlayer.bet += this.activePlayer.balance;
+          this.activePlayer.balance = 0;
+
+          await this.nextTurn();
+          break;
+        }
+
+        default: {
+          const betAmount = Number(this.ctx.message?.text) || Number(this.ctx.message?.text?.slice(2));
+
+          if (!betAmount) {
+            await this.ctx.replyWithMarkdown(pokerMessages.onMessage.unknownCommand);
+            await this.broadcastMessage();
+            break;
+          }
+
+          if (betAmount > this.activePlayer.balance) {
+            await this.ctx.replyWithMarkdown(pokerMessages.onMessage.betTooBig);
+            break;
+          }
+
+          if (betAmount < this.topBet - this.activePlayer.bet) {
+            await this.ctx.replyWithMarkdown(pokerMessages.onMessage.betTooSmall);
+            break;
+          }
+
+          this.activePlayer.bet += betAmount;
+          this.activePlayer.balance -= betAmount;
+
+          await this.nextTurn();
+        }
+      }
+    }
   }
 }
 

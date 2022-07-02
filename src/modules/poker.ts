@@ -14,7 +14,10 @@ export const pokerModule = () => {
   });
 
   bot.on('message:text', async (ctx, next) => {
-    await ctx.poker.handleMessage();
+    if (ctx.poker.chatId !== undefined) {
+      await ctx.poker.handleMessage();
+    }
+
     await next();
   });
 

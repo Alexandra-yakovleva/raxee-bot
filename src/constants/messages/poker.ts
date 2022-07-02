@@ -1,13 +1,17 @@
 import { User } from 'grammy/out/platform.node';
 
-import { PokerLastAction } from '../../types/poker';
 import { escapeMessage } from '../../utils/message';
 import { getMention } from '../../utils/user';
 
 export const pokerMessages = {
-  _: {
-    lastAction: (lastAction: PokerLastAction) => `${getMention(lastAction.user)}: ${escapeMessage(lastAction.message)}`,
+  onMessage: {
+    betTooBig: 'У тебя нет столько денег',
+    betTooSmall: 'Ставка слишком маленькая',
+    checkIsNotAllowed: 'Ты не можешь сделать check',
+    lastAction: (user: User, message: string) => `${getMention(user)}: ${escapeMessage(message)}`,
+    unknownCommand: 'Я тебя не понял, но всем передал',
     userTurn: (user: User) => `Ходит ${getMention(user)}`,
+    wrongTurn: 'Сейчас не твой ход, но я всем передал',
     yourTurn: 'Твой ход',
   },
 

@@ -1,14 +1,10 @@
 import { User } from 'grammy/out/platform.node';
 
-export interface PokerLastAction {
-  message: string
-  user: User
-}
-
 export interface PokerPlayer {
   balance: number
   bet: number
   cards: number[]
+  isFold: boolean
   user: User
 }
 
