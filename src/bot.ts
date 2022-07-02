@@ -1,6 +1,6 @@
 import { Bot } from 'grammy';
 
-import { pidorMiddleware } from './middleware/pidor';
+import { pidorMiddleware } from './middleware/pidorState';
 import { pidorModule } from './modules/pidor';
 import { replyWithMarkdown } from './plugins/replyWithMarkdown';
 import { CustomContext } from './types/context';
