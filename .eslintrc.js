@@ -8,6 +8,7 @@ module.exports = {
   },
   rules: {
     'arrow-body-style': 'off',
+    'class-methods-use-this': 'off',
     'consistent-return': 'off',
     'import/no-extraneous-dependencies': 'off',
 
@@ -21,6 +22,7 @@ module.exports = {
 
     'import/prefer-default-export': 'off',
     'max-len': ['error', 200],
+    'no-param-reassign': 'off',
     'no-promise-executor-return': 'off',
     'object-curly-newline': 'off',
 

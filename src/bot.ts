@@ -1,8 +1,12 @@
 import { Bot } from 'grammy';
 
 import { pidorMiddleware } from './middleware/pidorState';
+import { pokerRootStateMiddleware } from './middleware/pokerRootState';
+import { pokerStateMiddleware } from './middleware/pokerState';
 import { pidorModule } from './modules/pidor';
-import { replyWithMarkdown } from './plugins/replyWithMarkdown';
+import { pokerModule } from './modules/poker';
+import { pokerPlugin } from './plugins/poker';
+import { replyWithMarkdownPlugin } from './plugins/replyWithMarkdown';
 import { CustomContext } from './types/context';
 import { handleError } from './utils/error';
 
@@ -11,9 +15,13 @@ require('dotenv-flow').config();
 (async () => {
   const bot = new Bot<CustomContext>(process.env.BOT_TOKEN!);
   bot.use(
-    replyWithMarkdown(),
+    replyWithMarkdownPlugin(),
+    pokerPlugin(),
     pidorMiddleware(),
+    pokerRootStateMiddleware(),
+    pokerStateMiddleware(),
     pidorModule(),
+    pokerModule(),
   );
   bot.catch(handleError);
   bot.start();
@@ -23,5 +31,7 @@ require('dotenv-flow').config();
     { command: 'pidor_reg', description: 'Стать участником пидора дня' },
     { command: 'pidor_stats', description: 'Посмотреть статистику пидора дня' },
     { command: 'pidor_stats_year', description: 'Посмотреть статистику пидора дня за текущий год' },
+    { command: 'poker', description: 'Начать игру в покер' },
+    { command: 'poker_reg', description: 'Присоединиться к игре в покер' },
   ]);
 })();
