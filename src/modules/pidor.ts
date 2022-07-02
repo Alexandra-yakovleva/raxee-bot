@@ -2,7 +2,7 @@ import { format } from 'date-fns';
 import { Composer } from 'grammy';
 import * as R from 'ramda';
 
-import { errorMessage, pidorMessages } from '../constants/messages';
+import { pidorMessages } from '../constants/messages';
 import { CustomContext } from '../types/context';
 import { getCurrentDate } from '../utils/date';
 import { getMessageVariant } from '../utils/message';
@@ -10,7 +10,7 @@ import { asyncPause } from '../utils/pause';
 import { getPidorStats } from '../utils/pidor';
 import { getRandomItem } from '../utils/random';
 
-export const getPidorModule = () => {
+export const pidorModule = () => {
   const bot = new Composer<CustomContext>();
 
   bot.command('pidor', async (ctx) => {
@@ -45,8 +45,7 @@ export const getPidorModule = () => {
 
   bot.command('pidor_reg', async (ctx) => {
     if (!ctx.from) {
-      await ctx.replyWithMarkdown(errorMessage);
-      return;
+      throw new Error('ctx.from is empty');
     }
 
     const alreadyRegistered = Boolean(ctx.pidor.users[ctx.from.id]);
@@ -89,8 +88,7 @@ export const getPidorModule = () => {
     const stats = getPidorStats(R.pickBy((_, key) => key.startsWith('2021'), ctx.pidor.stats), ctx.pidor.users);
 
     if (!stats.length) {
-      await ctx.replyWithMarkdown(errorMessage);
-      return;
+      throw new Error('ctx.pidor.stats for 2021 is empty');
     }
 
     await ctx.replyWithMarkdown(pidorMessages._.year(stats[0].user, '2021'));

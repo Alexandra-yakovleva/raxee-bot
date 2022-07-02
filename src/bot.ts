@@ -1,18 +1,21 @@
 import { Bot } from 'grammy';
 
-import { getSessionMiddleware } from './middleware/session';
-import { getPidorModule } from './modules/pidor';
+import { pidorMiddleware } from './middleware/pidor';
+import { pidorModule } from './modules/pidor';
 import { replyWithMarkdown } from './plugins/replyWithMarkdown';
 import { CustomContext } from './types/context';
+import { handleError } from './utils/error';
 
 require('dotenv-flow').config();
 
 (async () => {
   const bot = new Bot<CustomContext>(process.env.BOT_TOKEN!);
-  bot.use(replyWithMarkdown());
-  bot.use(getSessionMiddleware());
-  bot.use(getPidorModule());
-
+  bot.use(
+    replyWithMarkdown(),
+    pidorMiddleware(),
+    pidorModule(),
+  );
+  bot.catch(handleError);
   bot.start();
 
   await bot.api.setMyCommands([

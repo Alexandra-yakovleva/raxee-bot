@@ -5,7 +5,7 @@ import { FileAdapter } from '@grammyjs/storage-file';
 import { namedSession } from '../plugins/namedSession';
 import { CustomContext } from '../types/context';
 
-export const getPidorMiddleware = () => namedSession<CustomContext, 'pidor'>({
+export const pidorMiddleware = () => namedSession<CustomContext, 'pidor'>({
   getSessionKey: (ctx) => (ctx.chat?.id === undefined ? undefined : `pidor ${ctx.chat.id}`),
 
   initial: () => ({
