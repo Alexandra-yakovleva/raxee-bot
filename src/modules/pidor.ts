@@ -99,7 +99,7 @@ export const pidorModule = () => {
       await ctx.replyWithMarkdown(getMessageVariant(pidorMessages.onMessage.current, ctx.from), { reply_to_message_id: ctx.message.message_id });
     }
 
-    next();
+    await next();
   });
 
   return bot;

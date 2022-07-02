@@ -31,7 +31,7 @@ export const namedSession = <C extends Context, K extends keyof C>(options: Name
         },
       });
 
-      next();
+      await next();
     } else {
       ctx[options.name] = (await storage.read(key)) ?? options.initial();
       await next();
