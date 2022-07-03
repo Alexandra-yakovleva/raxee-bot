@@ -85,6 +85,16 @@ export class Poker {
     return this.ctx.pokerState.players.some((player) => !player.lost && player.balance === 0);
   }
 
+  private getPlayerState(player: PokerPlayer) {
+    const callAmount = this.topBet - player.bet;
+    const canFold = !(this.isAllIn && player.balance === 0);
+    const canCheck = callAmount === 0;
+    const canCall = callAmount > 0 && callAmount < player.balance;
+    const canAllIn = !this.isAllIn || (!canCheck && !canCall);
+    const canRaise = !this.isAllIn;
+    return { callAmount, canAllIn, canCall, canCheck, canFold, canRaise };
+  }
+
   private getKeyboardForPlayer(player: PokerPlayer, isActive: boolean): string[][] {
     const keyboard: string[][] = [
       this.ctx.pokerState.cards.map((card, index) => (index < this.ctx.pokerState.cardsOpened ? card.toString() : ' ')),
@@ -96,13 +106,14 @@ export class Poker {
     }
 
     if (isActive) {
-      const callAmount = this.topBet - player.bet;
+      const playerState = this.getPlayerState(player);
 
       keyboard.push(
         [
-          pokerStrings.fold,
-          callAmount < player.balance && (callAmount > 0 ? pokerStrings.call(callAmount) : pokerStrings.check),
-          pokerStrings.allIn,
+          playerState.canFold && pokerStrings.fold,
+          playerState.canCheck && pokerStrings.check,
+          playerState.canCall && pokerStrings.call(playerState.callAmount),
+          playerState.canAllIn && pokerStrings.allIn,
         ].filter(Boolean) as string[],
       );
     }
@@ -371,14 +382,15 @@ export class Poker {
     }
 
     if (this.ctx.from.id === this.activePlayer.user.id) {
-      const callAmount = this.topBet - this.activePlayer.bet;
-      const canCheck = callAmount === 0;
-      const canCall = callAmount > 0 && callAmount < this.activePlayer.balance;
-      const canAllIn = !this.isAllIn || (!canCheck && !canCall);
-      const canRaise = !this.isAllIn;
+      const playerState = this.getPlayerState(this.activePlayer);
 
       switch (this.ctx.message?.text) {
         case pokerStrings.fold: {
+          if (!playerState.canFold) {
+            await this.ctx.replyWithMarkdown(pokerMessages.onMessage.foldIsNotAllowed);
+            break;
+          }
+
           this.activePlayer.folded = true;
 
           await this.nextTurn();
@@ -386,7 +398,7 @@ export class Poker {
         }
 
         case pokerStrings.check: {
-          if (!canCheck) {
+          if (!playerState.canCheck) {
             await this.ctx.replyWithMarkdown(pokerMessages.onMessage.checkIsNotAllowed);
             break;
           }
@@ -395,21 +407,21 @@ export class Poker {
           break;
         }
 
-        case pokerStrings.call(callAmount): {
-          if (!canCall) {
+        case pokerStrings.call(playerState.callAmount): {
+          if (!playerState.canCall) {
             await this.ctx.replyWithMarkdown(pokerMessages.onMessage.callIsNotAllowed);
             break;
           }
 
-          this.activePlayer.bet += callAmount;
-          this.activePlayer.balance -= callAmount;
+          this.activePlayer.bet += playerState.callAmount;
+          this.activePlayer.balance -= playerState.callAmount;
 
           await this.nextTurn();
           break;
         }
 
         case pokerStrings.allIn: {
-          if (!canAllIn) {
+          if (!playerState.canAllIn) {
             await this.ctx.replyWithMarkdown(pokerMessages.onMessage.allInIsNotAllowed);
             break;
           }
@@ -430,7 +442,7 @@ export class Poker {
             break;
           }
 
-          if (!canRaise) {
+          if (!playerState.canRaise) {
             await this.ctx.replyWithMarkdown(pokerMessages.onMessage.raiseIsNotAllowed);
             break;
           }
@@ -440,7 +452,7 @@ export class Poker {
             break;
           }
 
-          if (betAmount < callAmount + this.baseBet) {
+          if (betAmount < playerState.callAmount + this.baseBet) {
             await this.ctx.replyWithMarkdown(pokerMessages.onMessage.betTooSmall);
             break;
           }

@@ -9,6 +9,7 @@ export const pokerMessages = {
     betTooSmall: 'Ставка слишком маленькая',
     callIsNotAllowed: 'Ты не можешь сделать call',
     checkIsNotAllowed: 'Ты не можешь сделать check',
+    foldIsNotAllowed: 'Ты не можешь сделать fold',
     gameOver: 'Игра окончена, всем спасибо',
     lastAction: (user: User, message: string) => `${getMention(user)}: ${message}`,
     raiseIsNotAllowed: 'Ты не можешь сделать raise',
