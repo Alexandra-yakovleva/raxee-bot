@@ -237,7 +237,7 @@ export class Poker {
       throw new Error('winners is empty');
     }
 
-    messageParts.push([`Победа: ${winners.map((player) => getMention(player.user)).join(', ')}`]);
+    messageParts.push([`Победа достается: ${winners.map((player) => getMention(player.user)).join(', ')}`]);
 
     winners.forEach((player) => {
       player.balance += this.bankAmount / winners.length;
