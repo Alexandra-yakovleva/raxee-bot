@@ -20,7 +20,7 @@ export const pokerMessages = {
 
   register: {
     alreadyStarted: 'Игра в этом чате уже началась',
-    done: 'Готовься, ты в игре',
+    done: 'Готовься, ты в игре. Чтобы я смог с тобой общаться, [напиши мне](https://t.me/raxee_bot)',
     duplicateOtherChat: 'Ты уже в игре в другом чате',
     duplicateSameChat: 'Ты уже в игре в этом чате',
     tooMany: 'Слишком много игроков в этом чате',
@@ -28,7 +28,12 @@ export const pokerMessages = {
 
   start: {
     alreadyStarted: 'Игра уже началась',
-    done: 'Го в ЛС, игра началась',
+    done: 'Го в [ЛС](https://t.me/raxee_bot), игра началась',
     tooFew: 'Слишком мало игроков, добавляйтесь через /poker\\_reg',
+  },
+
+  stop: {
+    done: 'Игра в этом чате остановлена',
+    notStarted: 'Игра в этом чате не была запущена, но я удалил, всех кто присоединился',
   },
 };

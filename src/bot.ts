@@ -31,7 +31,8 @@ require('dotenv-flow').config();
     { command: 'pidor_reg', description: 'Стать участником пидора дня' },
     { command: 'pidor_stats', description: 'Посмотреть статистику пидора дня' },
     { command: 'pidor_stats_year', description: 'Посмотреть статистику пидора дня за текущий год' },
-    { command: 'poker', description: 'Начать игру в покер' },
     { command: 'poker_reg', description: 'Присоединиться к игре в покер' },
+    { command: 'poker_start', description: 'Начать игру в покер' },
+    { command: 'poker_stop', description: 'Закончить игру в покер' },
   ]);
 })();

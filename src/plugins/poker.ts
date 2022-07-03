@@ -185,7 +185,18 @@ export class Poker {
       player.turnMade = false;
     });
 
-    await this.setKeyboards(`В игре: ${this.nonLostPlayers.map((player) => getMention(player.user))}`);
+    await this.setKeyboards(`В игре: ${this.nonLostPlayers.map((player) => getMention(player.user)).join(', ')}`);
+  }
+
+  private async endGame() {
+    await this.broadcastMessage(pokerMessages.onMessage.gameOver);
+
+    await Promise.all(this.ctx.pokerState.players.map(async (player) => {
+      await this.ctx.api.sendSticker(player.user.id, 'CAACAgIAAxkBAAEVoGViwW3wZ-u-__6McwQN2uWw6nuabAACgAEAAj0N6AS-vFK-9cZHmCkE', { reply_markup: { remove_keyboard: true } });
+    }));
+
+    delete this.ctx.pokerRootState.playerIdsByChats[this.chatId!];
+    this.ctx.pokerState = Poker.generateState();
   }
 
   private async finishRound() {
@@ -231,21 +242,12 @@ export class Poker {
       }
     });
 
-    if (this.nonLostPlayers.length < 2) {
-      messageParts.push([pokerMessages.onMessage.gameOver]);
-      this.ctx.pokerState.started = false;
-    }
-
     await this.broadcastMessage(messageParts.map((parts) => parts.join('\n')).join('\n\n'));
 
-    if (this.ctx.pokerState.started) {
-      await this.dealCards();
+    if (this.nonLostPlayers.length < 2) {
+      await this.endGame();
     } else {
-      await Promise.all(this.ctx.pokerState.players.map(async (player) => {
-        await this.ctx.api.sendSticker(player.user.id, 'CAACAgIAAxkBAAEVoGViwW3wZ-u-__6McwQN2uWw6nuabAACgAEAAj0N6AS-vFK-9cZHmCkE', { reply_markup: { remove_keyboard: true } });
-      }));
-
-      this.ctx.pokerState = Poker.generateState();
+      await this.dealCards();
     }
   }
 
@@ -346,8 +348,22 @@ export class Poker {
     await this.ctx.replyWithMarkdown(pokerMessages.start.done);
   }
 
+  async stop() {
+    if (this.ctx.pokerState.started) {
+      await this.endGame();
+      await this.ctx.replyWithMarkdown(pokerMessages.stop.done);
+    } else {
+      await this.endGame();
+      await this.ctx.replyWithMarkdown(pokerMessages.stop.notStarted);
+    }
+  }
+
   async handleMessage() {
-    if (this.ctx.from?.id === this.activePlayer.user.id) {
+    if (!this.ctx.from) {
+      throw new Error('ctx.from is empty');
+    }
+
+    if (this.ctx.from.id === this.activePlayer.user.id) {
       const callAmount = this.topBet - this.activePlayer.bet;
       const canCheck = callAmount === 0;
       const canCall = callAmount > 0 && callAmount < this.activePlayer.balance;

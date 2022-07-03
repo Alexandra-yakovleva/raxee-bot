@@ -13,7 +13,7 @@ import { getRandomItem } from '../utils/random';
 export const pidorModule = () => {
   const bot = new Composer<CustomContext>();
 
-  bot.command('pidor', async (ctx) => {
+  bot.chatType(['group', 'supergroup']).command('pidor', async (ctx) => {
     if (!Object.keys(ctx.pidorState.users).length) {
       await ctx.replyWithMarkdown(getMessageVariant(pidorMessages._.empty, ctx.from));
       return;
@@ -43,7 +43,7 @@ export const pidorModule = () => {
     }
   });
 
-  bot.command('pidor_reg', async (ctx) => {
+  bot.chatType(['group', 'supergroup']).command('pidor_reg', async (ctx) => {
     if (!ctx.from) {
       throw new Error('ctx.from is empty');
     }
@@ -58,7 +58,7 @@ export const pidorModule = () => {
     ));
   });
 
-  bot.command('pidor_stats', async (ctx) => {
+  bot.chatType(['group', 'supergroup']).command('pidor_stats', async (ctx) => {
     const stats = getPidorStats(ctx.pidorState.stats, ctx.pidorState.users);
 
     await ctx.replyWithMarkdown([
@@ -70,7 +70,7 @@ export const pidorModule = () => {
     ].join('\n'));
   });
 
-  bot.command('pidor_stats_year', async (ctx) => {
+  bot.chatType(['group', 'supergroup']).command('pidor_stats_year', async (ctx) => {
     const isCurrentYear = R.startsWith(format(new Date(), 'yyyy'));
     const stats = getPidorStats(R.pickBy((_, key) => isCurrentYear(key), ctx.pidorState.stats), ctx.pidorState.users);
 
@@ -84,7 +84,7 @@ export const pidorModule = () => {
   });
 
   // TODO: https://grammy.dev/plugins/command-filter.html
-  bot.command('pidor_2021', async (ctx) => {
+  bot.chatType(['group', 'supergroup']).command('pidor_2021', async (ctx) => {
     const stats = getPidorStats(R.pickBy((_, key) => key.startsWith('2021'), ctx.pidorState.stats), ctx.pidorState.users);
 
     if (!stats.length) {
@@ -94,7 +94,7 @@ export const pidorModule = () => {
     await ctx.replyWithMarkdown(pidorMessages._.year(stats[0].user, '2021'));
   });
 
-  bot.on('message', async (ctx, next) => {
+  bot.chatType(['group', 'supergroup']).on('message', async (ctx, next) => {
     if (ctx.from.id === ctx.pidorState.stats[getCurrentDate()] && Math.random() < 0.1) {
       await ctx.replyWithMarkdown(getMessageVariant(pidorMessages.onMessage.current, ctx.from), { reply_to_message_id: ctx.message.message_id });
     }
