@@ -188,8 +188,8 @@ export class Poker {
     });
 
     await this.broadcastMessage([
-      `Big blind: ${getMention(this.firstPlayer.user)} (${this.firstPlayer.bet} 🪙)`,
-      `Small blind: ${getMention(this.activePlayer.user)} (${this.activePlayer.bet} 🪙)`,
+      `Big blind: ${getMention(this.firstPlayer.user)} (${this.firstPlayer.bet} 🪙) ${this.firstPlayer.balance === 0 ? pokerStrings.allIn : ''}`,
+      `Small blind: ${getMention(this.activePlayer.user)} (${this.activePlayer.bet} 🪙) ${this.activePlayer.balance === 0 ? pokerStrings.allIn : ''}`,
     ].join('\n'));
 
     await this.setKeyboards();
