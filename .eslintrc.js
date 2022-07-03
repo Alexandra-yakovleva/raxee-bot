@@ -24,6 +24,7 @@ module.exports = {
     'no-param-reassign': 'off',
     'no-promise-executor-return': 'off',
     'object-curly-newline': 'off',
+    'prefer-destructuring': 'off',
 
     'sort-imports': ['error', {
       ignoreCase: true,

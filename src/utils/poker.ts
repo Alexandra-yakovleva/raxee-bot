@@ -26,6 +26,13 @@ export class PokerCombination {
   get weight() {
     return this.level * 10000 + this.firstCard.value * 100 + (this.secondCard?.value || 0);
   }
+
+  toString() {
+    return [
+      ['Старшая карта', 'Пара', 'Две пары', 'Тройка', 'Стрит', 'Флэш', 'Фулл-хауз', 'Каре', 'Стрит флэш', 'Флэш рояль'][this.level],
+      `(${this.cards.join(' ')})`,
+    ].join(' ');
+  }
 }
 
 type CardsSubset = [PokerCard, PokerCard, PokerCard, PokerCard, PokerCard];
@@ -71,7 +78,11 @@ const getTwoPairs = (onePair: PokerCombination[]): PokerCombination[] => {
 
   for (let i = 0; i < onePair.length - 1; i += 1) {
     for (let j = i + 1; j < onePair.length; j += 1) {
-      combinations.push(new PokerCombination(2, [...onePair[i].cards, ...onePair[j].cards]));
+      const subset = [...onePair[i].cards, ...onePair[j].cards];
+
+      if (subset.filter((item, index, array) => array.indexOf(item) === index).length === 4) {
+        combinations.push(new PokerCombination(2, subset));
+      }
     }
   }
 
@@ -147,7 +158,7 @@ const getStraightFlush = (straight: PokerCombination[]): PokerCombination[] => {
 const getRoyalFlush = (straightFlush: PokerCombination[]): PokerCombination[] => {
   return straightFlush
     .filter((combination) => combination.cards[0].value === 12)
-    .map((combination) => new PokerCombination(8, combination.cards));
+    .map((combination) => new PokerCombination(9, combination.cards));
 };
 
 export const getPokerCombinations = (cards: PokerCard[]): PokerCombination[] => {
@@ -176,4 +187,11 @@ export const getPokerCombinations = (cards: PokerCard[]): PokerCombination[] => 
     ...onePair,
     ...highHand,
   ];
+};
+
+export const subtractPokerCombinations = (left: PokerCombination[], right: PokerCombination[]): PokerCombination[] => {
+  return left.filter((a) => {
+    const cardsString = a.cards.join('');
+    return !right.find((b) => cardsString === b.cards.join(''));
+  });
 };

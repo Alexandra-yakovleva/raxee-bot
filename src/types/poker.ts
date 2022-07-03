@@ -6,17 +6,20 @@ export interface PokerPlayer {
   balance: number
   bet: number
   cards: PokerCard[]
-  isFold: boolean
+  folded: boolean
+  lost: boolean
+  turnMade: boolean
   user: User
 }
 
 export interface PokerState {
-  activePlayerIndex: number,
+  activePlayerIndex: number
   cards: PokerCard[]
   cardsOpened: number
-  isStarted: boolean
+  firstPlayerIndex: number
   players: PokerPlayer[]
-  round: number,
+  round: number
+  started: boolean
 }
 
 export interface PokerRootState {

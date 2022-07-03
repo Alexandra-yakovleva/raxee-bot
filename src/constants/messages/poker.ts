@@ -5,12 +5,14 @@ import { getMention } from '../../utils/user';
 
 export const pokerMessages = {
   onMessage: {
+    allInIsNotAllowed: 'Ты не можешь сделать all-in',
     betTooBig: 'У тебя нет столько денег',
     betTooSmall: 'Ставка слишком маленькая',
     callIsNotAllowed: 'Ты не можешь сделать call',
     checkIsNotAllowed: 'Ты не можешь сделать check',
-    combinationLevels: ['Старшая карта', 'Пара', 'Две пары', 'Тройка', 'Стрит', 'Флэш', 'Фулл-хауз', 'Каре', 'Стрит флэш', 'Флэш рояль'],
+    gameOver: 'Игра окончена, всем спасибо',
     lastAction: (user: User, message: string) => `${getMention(user)}: ${escapeMessage(message)}`,
+    raiseIsNotAllowed: 'Ты не можешь сделать raise',
     unknownCommand: 'Я тебя не понял, но всем передал',
     userTurn: (user: User) => `Ходит ${getMention(user)}`,
     wrongTurn: 'Сейчас не твой ход, но я всем передал',
