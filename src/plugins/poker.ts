@@ -141,7 +141,7 @@ export class Poker {
           player,
           [
             message,
-            isActive ? pokerMessages.onMessage.yourTurn : pokerMessages.onMessage.userTurn(this.activePlayer.user),
+            isActive ? pokerMessages.onMessage.yourTurn(this.activePlayer.user) : pokerMessages.onMessage.userTurn(this.activePlayer.user),
           ].filter(Boolean).join('\n'),
           this.getKeyboardForPlayer(player, isActive),
         );
@@ -185,7 +185,12 @@ export class Poker {
       player.turnMade = false;
     });
 
-    await this.setKeyboards(`В игре: ${this.nonLostPlayers.map((player) => getMention(player.user)).join(', ')}`);
+    await this.setKeyboards([
+      `Играют: ${this.nonLostPlayers.map((player) => getMention(player.user)).join(', ')}`,
+      `Big blind: ${getMention(this.firstPlayer.user)}`,
+      `Small blind: ${getMention(this.activePlayer.user)}`,
+      '',
+    ].join('\n'));
   }
 
   private async endGame() {

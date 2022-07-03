@@ -15,12 +15,12 @@ export const pokerMessages = {
     unknownCommand: 'Я тебя не понял, но всем передал',
     userTurn: (user: User) => `Ходит ${getMention(user)}`,
     wrongTurn: 'Сейчас не твой ход, но я всем передал',
-    yourTurn: 'Твой ход',
+    yourTurn: (user: User) => `Твой ход, ${getMention(user)}`,
   },
 
   register: {
     alreadyStarted: 'Игра в этом чате уже началась',
-    done: 'Готовься, ты в игре. Чтобы я смог с тобой общаться, [напиши мне](https://t.me/raxee_bot)',
+    done: 'Готовься, ты в игре. Чтобы я смог с тобой общаться, [начни чат со мной](https://t.me/raxee_bot)',
     duplicateOtherChat: 'Ты уже в игре в другом чате',
     duplicateSameChat: 'Ты уже в игре в этом чате',
     tooMany: 'Слишком много игроков в этом чате',
