@@ -74,7 +74,7 @@ export class Poker {
   }
 
   private get baseBet() {
-    return (Math.floor(this.ctx.pokerState.round / 5) + 1) * 10;
+    return (Math.floor(this.ctx.pokerState.round / 4) + 1) * 10;
   }
 
   private get topBet() {
