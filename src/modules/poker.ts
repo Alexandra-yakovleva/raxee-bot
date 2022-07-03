@@ -14,7 +14,7 @@ export const pokerModule = () => {
   });
 
   bot.on('message:text', async (ctx, next) => {
-    if (ctx.poker.chatId !== undefined && ctx.pokerState.started) {
+    if (ctx.chat.type === 'private' && ctx.poker.chatId !== undefined) {
       await ctx.poker.handleMessage();
     }
 

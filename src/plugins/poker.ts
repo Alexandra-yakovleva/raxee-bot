@@ -244,6 +244,8 @@ export class Poker {
       await Promise.all(this.ctx.pokerState.players.map(async (player) => {
         await this.ctx.api.sendSticker(player.user.id, 'CAACAgIAAxkBAAEVoGViwW3wZ-u-__6McwQN2uWw6nuabAACgAEAAj0N6AS-vFK-9cZHmCkE', { reply_markup: { remove_keyboard: true } });
       }));
+
+      this.ctx.pokerState = Poker.generateState();
     }
   }
 
