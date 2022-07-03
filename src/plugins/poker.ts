@@ -4,7 +4,6 @@ import * as R from 'ramda';
 import { pokerMessages } from '../constants/messages';
 import { pokerStrings } from '../constants/poker';
 import { PokerPlayer, PokerRootState, PokerState } from '../types/poker';
-import { escapeMessage } from '../utils/message';
 import { getPokerCombinations, PokerCard, subtractPokerCombinations } from '../utils/poker';
 import { shuffleItems } from '../utils/random';
 import { getMention } from '../utils/user';
@@ -116,7 +115,7 @@ export class Poker {
       player.user.id,
       message,
       {
-        parse_mode: 'MarkdownV2',
+        parse_mode: 'Markdown',
         ...keyboard && { reply_markup: { keyboard } },
       },
     );
@@ -212,7 +211,7 @@ export class Poker {
 
       messageParts.push([
         '*Комбинации*',
-        ...candidates.map((player, index) => `${getMention(player.user)}: ${escapeMessage(playersCombinations[index].toString())}`),
+        ...candidates.map((player, index) => `${getMention(player.user)}: ${playersCombinations[index].toString()}`),
       ]);
     }
 

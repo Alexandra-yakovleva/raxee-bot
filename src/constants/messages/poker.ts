@@ -1,6 +1,5 @@
 import { User } from 'grammy/out/platform.node';
 
-import { escapeMessage } from '../../utils/message';
 import { getMention } from '../../utils/user';
 
 export const pokerMessages = {
@@ -11,7 +10,7 @@ export const pokerMessages = {
     callIsNotAllowed: 'Ты не можешь сделать call',
     checkIsNotAllowed: 'Ты не можешь сделать check',
     gameOver: 'Игра окончена, всем спасибо',
-    lastAction: (user: User, message: string) => `${getMention(user)}: ${escapeMessage(message)}`,
+    lastAction: (user: User, message: string) => `${getMention(user)}: ${message}`,
     raiseIsNotAllowed: 'Ты не можешь сделать raise',
     unknownCommand: 'Я тебя не понял, но всем передал',
     userTurn: (user: User) => `Ходит ${getMention(user)}`,
