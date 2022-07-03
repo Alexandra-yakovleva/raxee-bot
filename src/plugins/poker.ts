@@ -132,17 +132,14 @@ export class Poker {
     );
   }
 
-  private async setKeyboards(message?: string) {
+  private async setKeyboards() {
     await Promise.all(
       this.ctx.pokerState.players.map(async (player, index) => {
         const isActive = index === this.ctx.pokerState.activePlayerIndex;
 
         await this.sendMessageToPlayer(
           player,
-          [
-            message,
-            isActive ? pokerMessages.onMessage.yourTurn(this.activePlayer.user) : pokerMessages.onMessage.userTurn(this.activePlayer.user),
-          ].filter(Boolean).join('\n'),
+          isActive ? pokerMessages.onMessage.yourTurn(this.activePlayer.user) : pokerMessages.onMessage.userTurn(this.activePlayer.user),
           this.getKeyboardForPlayer(player, isActive),
         );
       }),
@@ -169,6 +166,11 @@ export class Poker {
       this.ctx.pokerState.activePlayerIndex %= this.ctx.pokerState.players.length;
     } while (this.activePlayer.lost);
 
+    await this.broadcastMessage([
+      '*Играют*',
+      ...this.nonLostPlayers.map((player) => `${getMention(player.user)} (${player.balance} 🪙)`),
+    ].join('\n'));
+
     this.ctx.pokerState.players.forEach((player, index) => {
       if (index === this.ctx.pokerState.firstPlayerIndex) {
         player.bet = this.baseBet * 2;
@@ -185,12 +187,12 @@ export class Poker {
       player.turnMade = false;
     });
 
-    await this.setKeyboards([
-      `Играют: ${this.nonLostPlayers.map((player) => getMention(player.user)).join(', ')}`,
-      `Big blind: ${getMention(this.firstPlayer.user)}`,
-      `Small blind: ${getMention(this.activePlayer.user)}`,
-      '',
+    await this.broadcastMessage([
+      `Big blind: ${getMention(this.firstPlayer.user)} (${this.firstPlayer.bet} 🪙)`,
+      `Small blind: ${getMention(this.activePlayer.user)} (${this.activePlayer.bet} 🪙)`,
     ].join('\n'));
+
+    await this.setKeyboards();
   }
 
   private async endGame() {
