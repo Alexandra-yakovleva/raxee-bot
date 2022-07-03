@@ -1,18 +1,19 @@
 import { User } from 'grammy/out/platform.node';
 
+import { PokerCard } from '../utils/poker';
+
 export interface PokerPlayer {
   balance: number
   bet: number
-  cards: number[]
+  cards: PokerCard[]
   isFold: boolean
   user: User
 }
 
 export interface PokerState {
   activePlayerIndex: number,
+  cards: PokerCard[]
   cardsOpened: number
-  deck: number[]
-  isAllIn: boolean
   isStarted: boolean
   players: PokerPlayer[]
   round: number,

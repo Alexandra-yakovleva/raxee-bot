@@ -8,7 +8,6 @@ module.exports = {
   },
   rules: {
     'arrow-body-style': 'off',
-    'class-methods-use-this': 'off',
     'consistent-return': 'off',
     'import/no-extraneous-dependencies': 'off',
 

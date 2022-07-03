@@ -4,6 +4,7 @@ import * as R from 'ramda';
 import { pokerMessages } from '../constants/messages';
 import { pokerStrings } from '../constants/poker';
 import { PokerPlayer, PokerRootState, PokerState } from '../types/poker';
+import { PokerCard } from '../utils/poker';
 import { shuffleItems } from '../utils/random';
 
 import { ReplyWithMarkdownFlavour } from './replyWithMarkdown';
@@ -22,20 +23,12 @@ export class Poker {
   static generateState(): PokerState {
     return {
       activePlayerIndex: 0,
+      cards: [],
       cardsOpened: 0,
-      deck: [],
-      isAllIn: false,
       isStarted: false,
       players: [],
       round: -1,
     };
-  }
-
-  static getCardValue(card: number) {
-    return [
-      ['♠️', '♣️', '♥️', '♦️'][Math.floor(card / 13)],
-      ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'][card % 13],
-    ].join('');
   }
 
   constructor(private ctx: PokerContext) {}
@@ -79,46 +72,39 @@ export class Poker {
   }
 
   private get firstPlayerIndex() {
-    return this.ctx.pokerState.round % this.ctx.pokerState.players.length;
-  }
-
-  private getPlayerByUserId(userId: number) {
-    return this.ctx.pokerState.players.find((player) => player.user.id === userId);
+    const index = this.ctx.pokerState.round;
+    return (this.ctx.pokerState.cardsOpened === 3 ? index + 1 : index) % this.ctx.pokerState.players.length;
   }
 
   private dealCards() {
+    const deck = shuffleItems(R.range(0, 52)).map((fullValue) => new PokerCard(fullValue % 4, Math.floor(fullValue / 4)));
+
     this.ctx.pokerState.isStarted = true;
-    this.ctx.pokerState.isAllIn = false;
-    this.ctx.pokerState.deck = shuffleItems(R.range(0, 52));
     this.ctx.pokerState.round += 1;
+    this.ctx.pokerState.cards = deck.splice(0, 5);
     this.ctx.pokerState.cardsOpened = 3;
-    this.ctx.pokerState.activePlayerIndex = this.firstPlayerIndex + 1;
+    this.ctx.pokerState.activePlayerIndex = this.firstPlayerIndex;
 
     this.ctx.pokerState.players.forEach((player, index) => {
-      if (index === this.firstPlayerIndex) {
+      if (index === this.firstPlayerIndex - 1) {
         player.bet = this.baseBet * 2;
-      } else if (index === this.firstPlayerIndex + 1) {
+      } else if (index === this.firstPlayerIndex) {
         player.bet = this.baseBet;
       } else {
         player.bet = 0;
       }
 
-      if (player.bet > player.balance) {
-        this.ctx.pokerState.isAllIn = true;
-        player.bet = player.balance;
-        player.balance = 0;
-      } else {
-        player.balance -= player.bet;
-      }
-
-      player.cards = this.ctx.pokerState.deck.splice(0, 2);
+      player.bet = Math.min(player.bet, player.balance);
+      player.balance -= player.bet;
+      player.cards = deck.splice(0, 2);
     });
   }
 
   private getKeyboardForPlayer(player: PokerPlayer, isActive: boolean): string[][] {
-    const keyboard = [
-      [`${this.ctx.pokerState.deck.slice(0, this.ctx.pokerState.cardsOpened).map(Poker.getCardValue).join(' ')}\u3000${this.bankAmount} 🪙`],
-      [`${player.cards.map(Poker.getCardValue).join(' ')}\u3000${player.balance} 🪙`],
+    const keyboard: string[][] = [
+      this.ctx.pokerState.cards.map((card, index) => (index < this.ctx.pokerState.cardsOpened ? card.toString() : ' ')),
+      [`Банк: ${this.bankAmount} 🪙`],
+      [...player.cards.toString(), `${player.balance} 🪙`],
     ];
 
     if (isActive) {
@@ -233,9 +219,19 @@ export class Poker {
   }
 
   private async nextTurn() {
+    await this.broadcastMessage();
+
     this.ctx.pokerState.activePlayerIndex += 1;
     this.ctx.pokerState.activePlayerIndex %= this.ctx.pokerState.players.length;
-    await this.broadcastMessage();
+
+    if (
+      this.ctx.pokerState.activePlayerIndex === this.firstPlayerIndex
+      && this.ctx.pokerState.players.every((player) => player.bet === this.topBet)
+    ) {
+      this.ctx.pokerState.cardsOpened += 1;
+      this.ctx.pokerState.activePlayerIndex = this.firstPlayerIndex;
+    }
+
     await this.setKeyboards();
   }
 
@@ -246,6 +242,8 @@ export class Poker {
     }
 
     if (this.ctx.from?.id === this.activePlayer.user.id) {
+      const callAmount = this.topBet - this.activePlayer.bet;
+
       switch (this.ctx.message?.text) {
         case pokerStrings.fold: {
           this.activePlayer.isFold = true;
@@ -255,7 +253,7 @@ export class Poker {
         }
 
         case pokerStrings.check: {
-          if (this.topBet - this.activePlayer.bet > 0) {
+          if (callAmount > 0) {
             await this.ctx.replyWithMarkdown(pokerMessages.onMessage.checkIsNotAllowed);
             break;
           }
@@ -265,7 +263,6 @@ export class Poker {
         }
 
         case pokerStrings.allIn: {
-          this.ctx.pokerState.isAllIn = true;
           this.activePlayer.bet += this.activePlayer.balance;
           this.activePlayer.balance = 0;
 
@@ -273,8 +270,21 @@ export class Poker {
           break;
         }
 
+        case pokerStrings.call(callAmount): {
+          if (callAmount > this.activePlayer.balance) {
+            await this.ctx.replyWithMarkdown(pokerMessages.onMessage.callIsNotAllowed);
+            break;
+          }
+
+          this.activePlayer.bet += callAmount;
+          this.activePlayer.balance -= callAmount;
+
+          await this.nextTurn();
+          break;
+        }
+
         default: {
-          const betAmount = Number(this.ctx.message?.text) || Number(this.ctx.message?.text?.slice(2));
+          const betAmount = Number(this.ctx.message?.text);
 
           if (!betAmount) {
             await this.ctx.replyWithMarkdown(pokerMessages.onMessage.unknownCommand);
@@ -282,12 +292,12 @@ export class Poker {
             break;
           }
 
-          if (betAmount > this.activePlayer.balance) {
+          if (betAmount >= this.activePlayer.balance) {
             await this.ctx.replyWithMarkdown(pokerMessages.onMessage.betTooBig);
             break;
           }
 
-          if (betAmount < this.topBet - this.activePlayer.bet) {
+          if (betAmount !== callAmount && betAmount < callAmount + this.baseBet) {
             await this.ctx.replyWithMarkdown(pokerMessages.onMessage.betTooSmall);
             break;
           }

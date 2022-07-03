@@ -7,7 +7,9 @@ export const pokerMessages = {
   onMessage: {
     betTooBig: 'У тебя нет столько денег',
     betTooSmall: 'Ставка слишком маленькая',
+    callIsNotAllowed: 'Ты не можешь сделать call',
     checkIsNotAllowed: 'Ты не можешь сделать check',
+    combinationLevels: ['Старшая карта', 'Пара', 'Две пары', 'Тройка', 'Стрит', 'Флэш', 'Фулл-хауз', 'Каре', 'Стрит флэш', 'Флэш рояль'],
     lastAction: (user: User, message: string) => `${getMention(user)}: ${escapeMessage(message)}`,
     unknownCommand: 'Я тебя не понял, но всем передал',
     userTurn: (user: User) => `Ходит ${getMention(user)}`,
