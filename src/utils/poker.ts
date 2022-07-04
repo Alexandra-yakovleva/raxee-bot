@@ -132,10 +132,10 @@ const getFlush = (cards: PokerCard[]): PokerCombination[] => {
 const getFullHouse = (onePair: PokerCombination[], threeOfAKind: PokerCombination[]): PokerCombination[] => {
   const combinations: PokerCombination[] = [];
 
-  for (let i = 0; i < onePair.length; i += 1) {
-    for (let j = 0; j < threeOfAKind.length; j += 1) {
-      if (onePair[i].cards[0].value !== threeOfAKind[j].cards[0].value) {
-        combinations.push(new PokerCombination(6, [...threeOfAKind[j].cards, ...onePair[i].cards]));
+  for (let i = 0; i < threeOfAKind.length; i += 1) {
+    for (let j = 0; j < onePair.length; j += 1) {
+      if (threeOfAKind[i].cards[0].value !== onePair[j].cards[0].value) {
+        combinations.push(new PokerCombination(6, [...threeOfAKind[i].cards, ...onePair[j].cards]));
       }
     }
   }

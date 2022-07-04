@@ -2,10 +2,10 @@ import { Context, NextFunction } from 'grammy';
 import * as R from 'ramda';
 
 import { pokerMessages } from '../constants/messages';
-import { pokerStrings } from '../constants/poker';
+import { pokerStickers, pokerStrings } from '../constants/poker';
 import { PokerPlayer, PokerRootState, PokerState } from '../types/poker';
 import { getPokerCombinations, PokerCard, subtractPokerCombinations } from '../utils/poker';
-import { shuffleItems } from '../utils/random';
+import { getRandomItem, shuffleItems } from '../utils/random';
 import { getMention } from '../utils/user';
 
 import { ReplyWithMarkdownFlavour } from './replyWithMarkdown';
@@ -210,7 +210,7 @@ export class Poker {
     await this.broadcastMessage(pokerMessages.onMessage.gameOver);
 
     await Promise.all(this.ctx.pokerState.players.map(async (player) => {
-      await this.ctx.api.sendSticker(player.user.id, 'CAACAgIAAxkBAAEVoGViwW3wZ-u-__6McwQN2uWw6nuabAACgAEAAj0N6AS-vFK-9cZHmCkE', { reply_markup: { remove_keyboard: true } });
+      await this.ctx.api.sendSticker(player.user.id, getRandomItem(pokerStickers), { reply_markup: { remove_keyboard: true } });
     }));
 
     delete this.ctx.pokerRootState.playerIdsByChats[this.chatId!];
