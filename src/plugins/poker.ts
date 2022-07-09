@@ -1,11 +1,11 @@
 import { Context, NextFunction } from 'grammy';
-import * as R from 'ramda';
 
 import { pokerMessages } from '../constants/messages';
 import { pokerStickers, pokerStrings } from '../constants/poker';
 import { PokerPlayer, PokerRootState, PokerState } from '../types/poker';
 import { getPokerCombinations, PokerCard, subtractPokerCombinations } from '../utils/poker';
 import { getRandomItem, shuffleItems } from '../utils/random';
+import * as R from '../utils/remeda';
 import { getMention } from '../utils/user';
 
 import { ReplyWithMarkdownFlavour } from './replyWithMarkdown';

@@ -1,7 +1,8 @@
 import { User } from 'grammy/out/platform.node';
-import * as R from 'ramda';
 
 import { PidorStatsMessageVariant } from '../types/pidor';
+
+import * as R from './remeda';
 
 export const buildPidorStatsMessageVariant = (statsVariant: PidorStatsMessageVariant) => statsVariant;
 
@@ -9,21 +10,22 @@ export const getPidorStats = (
   items: Record<string, number>,
   users: Record<string, User>,
 ) => {
-  return R.compose<[Record<string, number>], number[], Record<number, number>, Array<[string, number]>, Array<{ user: User, count: number }>, Array<{ user: User, count: number }>>(
-    R.sort((left, right) => right.count - left.count),
-
-    R.map((item) => ({
-      count: item[1],
-      user: users[Number(item[0])],
-    })),
-
-    R.toPairs,
+  return R.pipe(
+    items,
+    R.values,
 
     (userIds) => userIds.reduce<Record<number, number>>((acc, userId) => {
       acc[userId] = acc[userId] ? acc[userId] + 1 : 1;
       return acc;
     }, {}),
 
-    R.values,
-  )(items);
+    R.toPairs,
+
+    R.map((item) => ({
+      count: item[1],
+      user: users[Number(item[0])],
+    })),
+
+    R.sort((left, right) => right.count - left.count),
+  );
 };
