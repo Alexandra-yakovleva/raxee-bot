@@ -20,7 +20,7 @@ describe('getRandomItem', () => {
 
 describe('shuffleItems', () => {
   test('should shuffle array', () => {
-    expect(shuffleItems(['a', 'b', 'c', 'd'])).toStrictEqual(['d', 'c', 'a', 'b']);
+    expect(shuffleItems(['a', 'b', 'c', 'd'])).toMatchSnapshot();
   });
 
   test('should accept empty array', () => {
