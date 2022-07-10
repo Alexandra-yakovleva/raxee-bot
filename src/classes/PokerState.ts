@@ -83,7 +83,7 @@ export class PokerState {
   }
 
   get isAllIn() {
-    return this.players.some((player) => !player.lost && player.balance === 0);
+    return this.nonLostPlayers.some((player) => player.balance === 0);
   }
 
   get boardCombinations() {
@@ -126,15 +126,15 @@ export class PokerState {
     this.cards = deck.splice(0, 5);
     this.cardsOpened = 3;
 
-    this.firstPlayerIndex = this.getNextPlayerIndex(this.firstPlayerIndex);
-    this.activePlayerIndex = this.getNextPlayerIndex(this.firstPlayerIndex);
-
     this.players.forEach((player) => {
       player.bet = 0;
       player.cards = deck.splice(0, 2);
       player.folded = false;
       player.turnMade = false;
     });
+
+    this.firstPlayerIndex = this.getNextPlayerIndex(this.firstPlayerIndex);
+    this.activePlayerIndex = this.getNextPlayerIndex(this.firstPlayerIndex);
 
     const big = this.players[this.firstPlayerIndex];
     const small = this.activePlayer;
@@ -153,7 +153,7 @@ export class PokerState {
       await this.ctx?.api.sendSticker(player.user.id, getRandomItem(pokerStickers), { reply_markup: { remove_keyboard: true } });
     }));
 
-    this.ctx.pokerRootState.deleteLobby();
+    this.ctx.pokerRootState.resetLobby();
     this.ctx.pokerState = new PokerState(this.ctx);
   }
 
@@ -199,10 +199,10 @@ export class PokerState {
       });
 
       this.cardsOpened += 1;
-      this.activePlayerIndex = this.firstPlayerIndex - 1;
+      this.activePlayerIndex = this.getNextPlayerIndex(this.firstPlayerIndex - 1);
+    } else {
+      this.activePlayerIndex = this.getNextPlayerIndex(this.activePlayerIndex);
     }
-
-    this.activePlayerIndex = this.getNextPlayerIndex(this.activePlayerIndex, true);
 
     await this.setKeyboards();
   }

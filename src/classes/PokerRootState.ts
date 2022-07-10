@@ -25,6 +25,17 @@ export class PokerRootState {
   }
 
   get lobbyByGroup() {
+    if (this.ctx.chat!.type === 'private') {
+      throw new Error('lobbyByGroup called in private chat');
+    }
+
+    if (!this.lobbies[this.ctx.chat!.id]) {
+      this.lobbies[this.ctx.chat!.id] = {
+        id: this.ctx.chat!.id,
+        userIds: [],
+      };
+    }
+
     return this.lobbies[this.ctx.chat!.id];
   }
 
@@ -33,20 +44,16 @@ export class PokerRootState {
   }
 
   get lobby() {
-    return this.ctx.chat?.type === 'private' ? this.lobbyByUser : this.lobbyByGroup;
+    return this.ctx.chat!.type === 'private' ? this.lobbyByUser : this.lobbyByGroup;
   }
 
   addUserToLobby() {
-    if (!this.lobbyByGroup) {
-      this.lobbies[this.ctx.chat!.id] = { id: this.ctx.chat!.id, userIds: [] };
-    }
-
-    this.lobbyByGroup!.userIds.push(this.ctx.from!.id);
+    this.lobbyByGroup.userIds.push(this.ctx.from!.id);
   }
 
-  deleteLobby() {
+  resetLobby() {
     if (this.lobby) {
-      delete this.lobbies[this.lobby?.id];
+      this.lobby.userIds = [];
     }
   }
 }

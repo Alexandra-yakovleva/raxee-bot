@@ -88,7 +88,7 @@ export class PokerPlayer {
   }
 
   get canRaise() {
-    return !this.canAllIn;
+    return !this.ctx.pokerState.isAllIn;
   }
 
   get keyboard(): string[][] {

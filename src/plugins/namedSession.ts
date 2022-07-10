@@ -12,7 +12,7 @@ interface NamedSessionOptions<C extends Context, K extends keyof C> {
 
 export const namedSession = <C extends Context, K extends keyof C>(options: NamedSessionOptions<C, K>): MiddlewareFn<C> => {
   const getSessionKey = options.getSessionKey ?? ((ctx) => ctx.chat?.id.toString());
-  const getStorage = (options.getStorage ?? (() => options.storage ?? new MemorySessionStorage()));
+  const getStorage = options.getStorage ?? (() => options.storage ?? new MemorySessionStorage());
 
   return async (ctx, next) => {
     const key = await getSessionKey(ctx);
