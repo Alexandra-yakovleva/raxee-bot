@@ -14,12 +14,12 @@
 		"strict": true,
 		"noEmit": true,
 		"types": [
-			"@types/node"
+			"node",
+			"jest"
 		]
 	},
 	"exclude": [
-		"node_modules",
-		"test"
+		"node_modules"
 	],
 	"typeRoots": [
     "./src/types"
