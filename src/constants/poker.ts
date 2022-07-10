@@ -18,26 +18,22 @@ export const pokerMessages = {
       player.balance === 0 && pokerStrings.allIn,
     ].filter(Boolean).join(' '),
     blinds: (big: PokerPlayer, small: PokerPlayer) => [
-      `Big blind: ${pokerMessages._.blind(big)}`,
-      `Small blind: ${pokerMessages._.blind(small)}`,
+      `Big: ${pokerMessages._.blind(big)}`,
+      `Small: ${pokerMessages._.blind(small)}`,
     ].join('\n'),
     gameFinished: 'Игра окончена, всем спасибо',
     playerMessage: (player: PokerPlayer, message: string) => `${getMention(player.user)}: ${message}`,
-    roundFinished: (boardCards: PokerCard[], players: PokerPlayer[], winners: PokerPlayer[]) => [
-      '*Карты*',
+    roundFinished: (boardCards: PokerCard[], players: PokerPlayer[]) => [
       `Стол: ${boardCards.join(' ')}`,
-      ...players.map((player) => `${getMention(player.user)}: ${player.cards.join(' ')}`),
-      '',
-      '*Комбинации*',
-      ...players.map((player) => [
-        `${getMention(player.user)}:`,
-        player.topCombination,
-        player.folded && pokerStrings.fold,
-        winners.find((p) => p.user.id === player.user.id) && pokerStrings.win,
-      ].filter(Boolean).join(' ')),
-      '',
-      `Победа достается: ${winners.map((player) => getMention(player.user)).join(', ')}`,
-    ].join('\n'),
+      players.map((player) => [
+        `${getMention(player.user)}: ${player.cards.join(' ')}`,
+        [
+          player.topCombination,
+          player.folded && pokerStrings.fold,
+          player.win && pokerStrings.win,
+        ].filter(Boolean).join(' '),
+      ].filter(Boolean).join('\n')).join('\n\n'),
+    ].join('\n\n'),
     userTurn: (player: PokerPlayer) => `Ходит ${getMention(player.user)}`,
     whoInGame: (players: PokerPlayer[]) => [
       '*Играют*',

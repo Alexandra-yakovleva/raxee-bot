@@ -17,10 +17,14 @@ export class PokerCombination {
     return this.level * 10000 + this.firstCard.value * 100 + (this.secondCard?.value || 0);
   }
 
+  get levelName() {
+    return ['старшая карта', 'пара', 'две пары', 'тройка', 'стрит', 'флэш', 'фулл-хауз', 'каре', 'стрит флэш', 'флэш рояль'][this.level];
+  }
+
   toString() {
     return [
-      ['Старшая карта', 'Пара', 'Две пары', 'Тройка', 'Стрит', 'Флэш', 'Фулл-хауз', 'Каре', 'Стрит флэш', 'Флэш рояль'][this.level],
-      `(${this.cards.join(' ')})`,
+      this.cards.join(' '),
+      `(${this.levelName})`,
     ].join(' ');
   }
 }

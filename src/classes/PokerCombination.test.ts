@@ -56,6 +56,6 @@ describe('#toString', () => {
   test('should return text value', () => {
     const cards = [new PokerCard(1, 3), new PokerCard(0, 7), new PokerCard(3, 4), new PokerCard(3, 5)];
     const combination = new PokerCombination(2, cards);
-    expect(combination.toString()).toBe('Две пары (♣️5 ♠️9 ♦️6 ♦️7)');
+    expect(combination.toString()).toBe('♣️5 ♠️9 ♦️6 ♦️7 (две пары)');
   });
 });

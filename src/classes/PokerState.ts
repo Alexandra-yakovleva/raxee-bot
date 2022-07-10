@@ -90,6 +90,18 @@ export class PokerState {
     return getPokerCombinations(this.cards);
   }
 
+  get topWeight() {
+    return Math.max(...this.nonLostPlayers.map((player) => (player.folded ? -1 : player.topCombination.weight)));
+  }
+
+  get winnersCount() {
+    return this.nonLostPlayers.reduce((acc, player) => (player.win ? acc + 1 : acc), 0);
+  }
+
+  get winAmount() {
+    return this.bankAmount / this.winnersCount;
+  }
+
   getNextPlayerIndex(index: number, checkBalance = false) {
     do {
       index += 1;
@@ -158,16 +170,13 @@ export class PokerState {
   }
 
   async finishRound() {
-    const topWeight = Math.max(...this.nonLostPlayers.map((player) => (player.folded ? -1 : player.topCombination.weight)));
-    const winners = this.nonLostPlayers.filter((player) => !player.folded && player.topCombination.weight === topWeight);
+    await this.broadcastMessage(pokerMessages._.roundFinished(this.cards, this.nonLostPlayers));
 
-    winners.forEach((player) => {
-      player.balance += this.bankAmount / winners.length;
-    });
+    this.nonLostPlayers.forEach((player) => {
+      if (player.win) {
+        player.balance += this.winAmount;
+      }
 
-    await this.broadcastMessage(pokerMessages._.roundFinished(this.cards, this.nonLostPlayers, winners));
-
-    this.players.forEach((player) => {
       if (player.balance === 0) {
         player.lost = true;
       }

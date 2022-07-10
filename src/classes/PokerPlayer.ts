@@ -67,6 +67,10 @@ export class PokerPlayer {
     return this.ownCombinations[0];
   }
 
+  get win() {
+    return !this.folded && this.topCombination.weight === this.ctx.pokerState.topWeight;
+  }
+
   get callAmount() {
     return this.ctx.pokerState.topBet - this.bet;
   }
