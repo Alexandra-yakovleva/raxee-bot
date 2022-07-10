@@ -71,8 +71,8 @@ export const pidorModule = () => {
   });
 
   bot.chatType(['group', 'supergroup']).command('pidor_stats_year', async (ctx) => {
-    const isCurrentYear = R.startsWith(format(new Date(), 'yyyy'));
-    const stats = getPidorStats(R.pickBy(ctx.pidorState.stats, (_, key) => isCurrentYear(key)), ctx.pidorState.users);
+    const currentYear = format(new Date(), 'yyyy');
+    const stats = getPidorStats(R.pickBy(ctx.pidorState.stats, (_, key) => key.startsWith(currentYear)), ctx.pidorState.users);
 
     await ctx.replyWithMarkdown([
       pidorMessages.statsYear.title(),
