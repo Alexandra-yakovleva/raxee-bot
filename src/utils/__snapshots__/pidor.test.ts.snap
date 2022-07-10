@@ -1,0 +1,30 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`getPidorStats should count stats 1`] = `
+Array [
+  Object {
+    "count": 5,
+    "user": Object {
+      "first_name": "",
+      "id": 1,
+      "is_bot": false,
+    },
+  },
+  Object {
+    "count": 3,
+    "user": Object {
+      "first_name": "",
+      "id": 2,
+      "is_bot": false,
+    },
+  },
+  Object {
+    "count": 2,
+    "user": Object {
+      "first_name": "",
+      "id": 3,
+      "is_bot": false,
+    },
+  },
+]
+`;
