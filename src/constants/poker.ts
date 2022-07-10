@@ -1,5 +1,5 @@
-import { User } from 'grammy/out/platform.node';
-
+import { PokerCard } from '../classes/PokerCard';
+import { PokerPlayer } from '../classes/PokerPlayer';
 import { getMention } from '../utils';
 
 export const pokerStrings = {
@@ -11,6 +11,31 @@ export const pokerStrings = {
 };
 
 export const pokerMessages = {
+  _: {
+    blinds: (big: PokerPlayer, small: PokerPlayer) => [
+      `Big blind: ${getMention(big.user)} (${big.bet} 🪙) ${big.balance === 0 ? pokerStrings.allIn : ''}`,
+      `Small blind: ${getMention(small.user)} (${small.bet} 🪙) ${small.balance === 0 ? pokerStrings.allIn : ''}`,
+    ].join('\n'),
+    gameFinished: 'Игра окончена, всем спасибо',
+    playerMessage: (player: PokerPlayer, message: string) => `${getMention(player.user)}: ${message}`,
+    roundFinished: (boardCards: PokerCard[], players: PokerPlayer[], winners: PokerPlayer[]) => [
+      '*Карты*',
+      `Стол: ${boardCards.join(' ')}`,
+      ...players.map((player) => `${getMention(player.user)}: ${player.cards.join(' ')}`),
+      '',
+      '*Комбинации*',
+      ...players.map((player) => `${getMention(player.user)}: ${player.topCombination.toString()}`),
+      '',
+      `Победа достается: ${winners.map((player) => getMention(player.user)).join(', ')}`,
+    ].join('\n'),
+    userTurn: (player: PokerPlayer) => `Ходит ${getMention(player.user)}`,
+    whoInGame: (players: PokerPlayer[]) => [
+      '*Играют*',
+      ...players.map((player) => `${getMention(player.user)} (${player.balance} 🪙)`),
+    ].join('\n'),
+    yourTurn: (player: PokerPlayer) => `Твой ход, ${getMention(player.user)}`,
+  },
+
   onMessage: {
     allInIsNotAllowed: 'Ты не можешь сделать all-in',
     betTooBig: 'У тебя нет столько денег',
@@ -18,13 +43,9 @@ export const pokerMessages = {
     callIsNotAllowed: 'Ты не можешь сделать call',
     checkIsNotAllowed: 'Ты не можешь сделать check',
     foldIsNotAllowed: 'Ты не можешь сделать fold',
-    gameOver: 'Игра окончена, всем спасибо',
-    lastAction: (user: User, message: string) => `${getMention(user)}: ${message}`,
     raiseIsNotAllowed: 'Ты не можешь сделать raise',
     unknownCommand: 'Я тебя не понял, но всем передал',
-    userTurn: (user: User) => `Ходит ${getMention(user)}`,
     wrongTurn: 'Сейчас не твой ход, но я всем передал',
-    yourTurn: (user: User) => `Твой ход, ${getMention(user)}`,
   },
 
   register: {

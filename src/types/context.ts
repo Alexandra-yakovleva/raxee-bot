@@ -1,15 +1,14 @@
 import { Context } from 'grammy';
 
-import { PokerFlavour } from '../plugins/poker';
+import { PokerRootState } from '../classes/PokerRootState';
+import { PokerState } from '../classes/PokerState';
 import { ReplyWithMarkdownFlavour } from '../plugins/replyWithMarkdown';
 
 import { PidorState } from './pidor';
-import { PokerRootState, PokerState } from './poker';
 
 export type CustomContext =
   Context &
   ReplyWithMarkdownFlavour &
   { pidorState: PidorState } &
   { pokerState: PokerState } &
-  { pokerRootState: PokerRootState } &
-  PokerFlavour;
+  { pokerRootState: PokerRootState };

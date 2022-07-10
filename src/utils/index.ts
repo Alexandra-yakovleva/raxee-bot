@@ -1,6 +1,7 @@
 export * from './asyncPause';
 export * from './buildMessageVariants';
 export * from './buildPidorStatsMessageVariant';
+export * from './differenceWith';
 export * from './getMention';
 export * from './getMessageVariant';
 export * from './getPidorCurrentDate';
@@ -13,4 +14,3 @@ export * from './isFirstApril';
 export * from './isHalloween';
 export * from './pickBy';
 export * from './shuffleItems';
-export * from './subtractPokerCombinations';

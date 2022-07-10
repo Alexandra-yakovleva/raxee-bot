@@ -6,7 +6,6 @@ import { pokerStateMiddleware } from './middleware/pokerState';
 import { pidorModule } from './modules/pidor';
 import { pokerModule } from './modules/poker';
 import { voiceModule } from './modules/voice';
-import { pokerPlugin } from './plugins/poker';
 import { replyWithMarkdownPlugin } from './plugins/replyWithMarkdown';
 import { CustomContext } from './types/context';
 import { handleError } from './utils';
@@ -17,7 +16,6 @@ require('dotenv-flow').config();
   const bot = new Bot<CustomContext>(process.env.BOT_TOKEN!);
   bot.use(
     replyWithMarkdownPlugin(),
-    pokerPlugin(),
     pidorMiddleware(),
     pokerRootStateMiddleware(),
     pokerStateMiddleware(),

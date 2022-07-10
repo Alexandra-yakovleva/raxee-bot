@@ -1,5 +1,21 @@
+export interface PokerCardRaw {
+  suit: number
+  value: number
+}
+
 export class PokerCard {
   constructor(public suit: number, public value: number) {}
+
+  static fromRaw(raw: PokerCardRaw) {
+    return new PokerCard(raw.suit, raw.value);
+  }
+
+  toRaw(): PokerCardRaw {
+    return {
+      suit: this.suit,
+      value: this.value,
+    };
+  }
 
   toString() {
     return [

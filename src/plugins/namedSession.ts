@@ -4,14 +4,15 @@ type MaybePromise<T> = Promise<T> | T;
 
 interface NamedSessionOptions<C extends Context, K extends keyof C> {
   name: K
-  initial: () => C[K]
+  initial: (ctx: C) => C[K]
   getSessionKey?: (ctx: C) => MaybePromise<string | undefined>
+  getStorage?: (ctx: C) => StorageAdapter<C[K]>
   storage?: StorageAdapter<C[K]>
 }
 
 export const namedSession = <C extends Context, K extends keyof C>(options: NamedSessionOptions<C, K>): MiddlewareFn<C> => {
   const getSessionKey = options.getSessionKey ?? ((ctx) => ctx.chat?.id.toString());
-  const storage = options.storage ?? new MemorySessionStorage();
+  const getStorage = (options.getStorage ?? (() => options.storage ?? new MemorySessionStorage()));
 
   return async (ctx, next) => {
     const key = await getSessionKey(ctx);
@@ -33,7 +34,8 @@ export const namedSession = <C extends Context, K extends keyof C>(options: Name
 
       await next();
     } else {
-      ctx[options.name] = (await storage.read(key)) ?? options.initial();
+      const storage = getStorage(ctx);
+      ctx[options.name] = (await storage.read(key)) ?? options.initial(ctx);
       await next();
       await storage.write(key, ctx[options.name]);
     }

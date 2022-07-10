@@ -10,6 +10,7 @@ module.exports = {
   rules: {
     'arrow-body-style': 'off',
     'consistent-return': 'off',
+    'import/no-cycle': 'off',
     'import/no-extraneous-dependencies': 'off',
 
     'import/order': ['error', {
