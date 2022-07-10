@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`shuffleItems should shuffle array 1`] = `
+exports[`should shuffle array 1`] = `
 Array [
   "d",
   "c",

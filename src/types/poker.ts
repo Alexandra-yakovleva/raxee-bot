@@ -1,6 +1,8 @@
 import { User } from 'grammy/out/platform.node';
 
-import { PokerCard } from '../utils/poker';
+import { PokerCard } from '../classes/PokerCard';
+
+export type PokerCardsSubset = [PokerCard, PokerCard, PokerCard, PokerCard, PokerCard];
 
 export interface PokerPlayer {
   balance: number
@@ -12,6 +14,10 @@ export interface PokerPlayer {
   user: User
 }
 
+export interface PokerRootState {
+  playerIdsByChats: Record<number, number[]>
+}
+
 export interface PokerState {
   activePlayerIndex: number
   cards: PokerCard[]
@@ -20,8 +26,4 @@ export interface PokerState {
   players: PokerPlayer[]
   round: number
   started: boolean
-}
-
-export interface PokerRootState {
-  playerIdsByChats: Record<number, number[]>
 }

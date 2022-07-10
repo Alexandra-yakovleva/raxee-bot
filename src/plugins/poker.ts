@@ -1,24 +1,13 @@
 import { Context, NextFunction } from 'grammy';
 import * as R from 'remeda';
 
+import { PokerCard } from '../classes/PokerCard';
 import { pokerMessages } from '../constants/messages';
 import { pokerStickers, pokerStrings } from '../constants/poker';
 import { PokerPlayer, PokerRootState, PokerState } from '../types/poker';
-import { getPokerCombinations, PokerCard, subtractPokerCombinations } from '../utils/poker';
-import { getRandomItem, shuffleItems } from '../utils/random';
-import { getMention } from '../utils/user';
+import { getMention, getPokerCombinations, getRandomItem, shuffleItems, subtractPokerCombinations } from '../utils';
 
 import { ReplyWithMarkdownFlavour } from './replyWithMarkdown';
-
-export interface PokerFlavour {
-  poker: Poker
-}
-
-type PokerContext =
-  Context &
-  ReplyWithMarkdownFlavour &
-  { pokerState: PokerState } &
-  { pokerRootState: PokerRootState };
 
 export class Poker {
   static generateState(): PokerState {
@@ -468,6 +457,16 @@ export class Poker {
       await this.broadcastPlayerMessage();
     }
   }
+}
+
+type PokerContext =
+  Context &
+  ReplyWithMarkdownFlavour &
+  { pokerState: PokerState } &
+  { pokerRootState: PokerRootState };
+
+export interface PokerFlavour {
+  poker: Poker
 }
 
 export const pokerPlugin = () => async (ctx: PokerContext & PokerFlavour, next: NextFunction) => {

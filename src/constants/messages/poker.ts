@@ -1,6 +1,6 @@
 import { User } from 'grammy/out/platform.node';
 
-import { getMention } from '../../utils/user';
+import { getMention } from '../../utils';
 
 export const pokerMessages = {
   onMessage: {

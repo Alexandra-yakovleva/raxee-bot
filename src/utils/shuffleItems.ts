@@ -1,8 +1,3 @@
-export const getRandomItem = <T>(items: T[]) => {
-  const index = Math.floor(Math.random() * items.length);
-  return items[index];
-};
-
 export const shuffleItems = <T>(item: T[]) => {
   const res = [...item];
 

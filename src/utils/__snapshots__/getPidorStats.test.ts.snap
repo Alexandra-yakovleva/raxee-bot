@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`getPidorStats should count stats 1`] = `
+exports[`should count stats 1`] = `
 Array [
   Object {
     "count": 5,

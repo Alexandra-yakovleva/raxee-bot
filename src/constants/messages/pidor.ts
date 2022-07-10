@@ -1,10 +1,7 @@
 /* eslint-disable max-len, no-irregular-whitespace */
 import { User } from 'grammy/out/platform.node';
 
-import { isFirstApril, isHalloween } from '../../utils/date';
-import { buildMessageVariants } from '../../utils/message';
-import { buildPidorStatsMessageVariant } from '../../utils/pidor';
-import { getMention, getUserName } from '../../utils/user';
+import { buildMessageVariants, buildPidorStatsMessageVariant, getMention, getUserName, isFirstApril, isHalloween } from '../../utils';
 
 const pidor = [
   ['пидор', 'пидоры'],
@@ -24,6 +21,16 @@ const pumpkin = [
   ['тыковке', 'тыковках'],
 ];
 
+export const getDay = () => {
+  let text = 'дня';
+
+  if (isFirstApril()) {
+    text = 'часа';
+  }
+
+  return text;
+};
+
 export const getPidor = (role: 1 | 2 | 3 | 4 | 5 | 6, count: 1 | 2, opts: {
   capitalize?: boolean
   uppercase?: boolean
@@ -42,16 +49,6 @@ export const getPidor = (role: 1 | 2 | 3 | 4 | 5 | 6, count: 1 | 2, opts: {
 
   if (opts.uppercase) {
     text = text.toUpperCase();
-  }
-
-  return text;
-};
-
-export const getDay = () => {
-  let text = 'дня';
-
-  if (isFirstApril()) {
-    text = 'часа';
   }
 
   return text;

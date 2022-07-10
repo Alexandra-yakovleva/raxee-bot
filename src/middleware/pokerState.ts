@@ -2,11 +2,11 @@ import path from 'path';
 
 import { FileAdapter } from '@grammyjs/storage-file';
 
+import { PokerCard } from '../classes/PokerCard';
 import { namedSession } from '../plugins/namedSession';
 import { Poker } from '../plugins/poker';
 import { CustomContext } from '../types/context';
 import { PokerState } from '../types/poker';
-import { PokerCard } from '../utils/poker';
 
 export const pokerStateMiddleware = () => namedSession<CustomContext, 'pokerState'>({
   getSessionKey: (ctx) => (ctx.poker.chatId === undefined ? undefined : `poker ${ctx.poker.chatId}`),

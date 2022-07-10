@@ -9,7 +9,7 @@ import { voiceModule } from './modules/voice';
 import { pokerPlugin } from './plugins/poker';
 import { replyWithMarkdownPlugin } from './plugins/replyWithMarkdown';
 import { CustomContext } from './types/context';
-import { handleError } from './utils/error';
+import { handleError } from './utils';
 
 require('dotenv-flow').config();
 

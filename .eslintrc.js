@@ -6,6 +6,7 @@ module.exports = {
   parserOptions: {
     project: './tsconfig.eslint.json',
   },
+  plugins: ['sort-export-all'],
   rules: {
     'arrow-body-style': 'off',
     'consistent-return': 'off',
@@ -25,6 +26,7 @@ module.exports = {
     'no-promise-executor-return': 'off',
     'object-curly-newline': 'off',
     'prefer-destructuring': 'off',
+    'sort-export-all/sort-export-all': 'error',
 
     'sort-imports': ['error', {
       ignoreCase: true,

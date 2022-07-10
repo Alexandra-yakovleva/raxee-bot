@@ -3,11 +3,7 @@ import { Composer } from 'grammy';
 
 import { pidorMessages } from '../constants/messages';
 import { CustomContext } from '../types/context';
-import { getMessageVariant } from '../utils/message';
-import { asyncPause } from '../utils/pause';
-import { pickBy } from '../utils/pickBy';
-import { getPidorCurrentDate, getPidorStats } from '../utils/pidor';
-import { getRandomItem } from '../utils/random';
+import { asyncPause, getMessageVariant, getPidorCurrentDate, getPidorStats, getRandomItem, pickBy } from '../utils';
 
 export const pidorModule = () => {
   const bot = new Composer<CustomContext>();
