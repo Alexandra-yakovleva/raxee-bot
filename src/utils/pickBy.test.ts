@@ -7,6 +7,7 @@ describe('data first', () => {
     const result = pickBy({ a: 1, A: 3, b: 2, B: 4 }, (val, key) => key.toUpperCase() === key);
     expect(result).toStrictEqual({ A: 3, B: 4 });
   });
+
   test('allow undefined or null', () => {
     expect(pickBy(undefined as any, (val, key) => key === 'foo')).toEqual({});
     expect(pickBy(null as any, (val, key) => key === 'foo')).toEqual({});
