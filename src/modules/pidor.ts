@@ -1,7 +1,7 @@
 import { format } from 'date-fns';
 import { Composer } from 'grammy';
 
-import { pidorMessages } from '../constants/messages';
+import { pidorMessages } from '../constants/pidor';
 import { CustomContext } from '../types/context';
 import { asyncPause, getMessageVariant, getPidorCurrentDate, getPidorStats, getRandomItem, pickBy } from '../utils';
 

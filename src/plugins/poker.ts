@@ -2,8 +2,7 @@ import { Context, NextFunction } from 'grammy';
 import * as R from 'remeda';
 
 import { PokerCard } from '../classes/PokerCard';
-import { pokerMessages } from '../constants/messages';
-import { pokerStickers, pokerStrings } from '../constants/poker';
+import { pokerMessages, pokerStickers, pokerStrings } from '../constants/poker';
 import { PokerPlayer, PokerRootState, PokerState } from '../types/poker';
 import { getMention, getPokerCombinations, getRandomItem, shuffleItems, subtractPokerCombinations } from '../utils';
 
