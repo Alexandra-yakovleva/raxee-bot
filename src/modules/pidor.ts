@@ -3,11 +3,10 @@ import { Composer } from 'grammy';
 
 import { pidorMessages } from '../constants/messages';
 import { CustomContext } from '../types/context';
-import { getCurrentDate } from '../utils/date';
 import { getMessageVariant } from '../utils/message';
 import { asyncPause } from '../utils/pause';
 import { pickBy } from '../utils/pickBy';
-import { getPidorStats } from '../utils/pidor';
+import { getPidorCurrentDate, getPidorStats } from '../utils/pidor';
 import { getRandomItem } from '../utils/random';
 
 export const pidorModule = () => {
@@ -19,7 +18,7 @@ export const pidorModule = () => {
       return;
     }
 
-    const date = getCurrentDate();
+    const date = getPidorCurrentDate();
 
     if (ctx.pidorState.stats[date]) {
       const currentUser = ctx.pidorState.users[ctx.pidorState.stats[date]];
@@ -95,7 +94,7 @@ export const pidorModule = () => {
   });
 
   bot.chatType(['group', 'supergroup']).on('message', async (ctx, next) => {
-    if (ctx.from.id === ctx.pidorState.stats[getCurrentDate()] && Math.random() < 0.1) {
+    if (ctx.from.id === ctx.pidorState.stats[getPidorCurrentDate()] && Math.random() < 0.1) {
       await ctx.replyWithMarkdown(getMessageVariant(pidorMessages.onMessage.current, ctx.from), { reply_to_message_id: ctx.message.message_id });
     }
 

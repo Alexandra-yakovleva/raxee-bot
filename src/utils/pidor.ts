@@ -1,9 +1,20 @@
+import { format } from 'date-fns';
 import { User } from 'grammy/out/platform.node';
 import * as R from 'remeda';
 
 import { PidorStatsMessageVariant } from '../types/pidor';
 
+import { isFirstApril } from './date';
+
 export const buildPidorStatsMessageVariant = (statsVariant: PidorStatsMessageVariant) => statsVariant;
+
+export const getPidorCurrentDate = () => {
+  if (isFirstApril()) {
+    return format(new Date(), 'yyyy-MM-dd-HH');
+  }
+
+  return format(new Date(), 'yyyy-MM-dd');
+};
 
 export const getPidorStats = (
   items: Record<string, number>,
