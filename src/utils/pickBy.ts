@@ -1,4 +1,3 @@
-// eslint-disable-next-line no-restricted-imports
 import { purry } from 'remeda';
 import { Key } from 'remeda/src/_types';
 

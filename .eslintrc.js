@@ -23,7 +23,6 @@ module.exports = {
     'max-len': ['error', 200],
     'no-param-reassign': 'off',
     'no-promise-executor-return': 'off',
-    'no-restricted-imports': ['error', 'remeda'],
     'object-curly-newline': 'off',
     'prefer-destructuring': 'off',
 

@@ -1,4 +1,3 @@
-// eslint-disable-next-line no-restricted-imports
 import { pipe } from 'remeda';
 
 import { pickBy } from './pickBy';

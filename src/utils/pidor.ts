@@ -1,8 +1,7 @@
 import { User } from 'grammy/out/platform.node';
+import * as R from 'remeda';
 
 import { PidorStatsMessageVariant } from '../types/pidor';
-
-import * as R from './remeda';
 
 export const buildPidorStatsMessageVariant = (statsVariant: PidorStatsMessageVariant) => statsVariant;
 
