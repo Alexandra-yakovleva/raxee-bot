@@ -163,7 +163,7 @@ export class PokerState {
       await this.ctx?.api.sendSticker(player.user.id, getRandomItem(pokerStickers), { reply_markup: { remove_keyboard: true } });
     }));
 
-    this.ctx.pokerRootState.removeLobby();
+    this.ctx.pokerRootState.resetLobby();
     this.ctx.pokerState = new PokerState(this.ctx);
   }
 

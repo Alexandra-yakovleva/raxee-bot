@@ -1,16 +1,14 @@
 import { CustomContext } from '../types/context';
 
-export interface PokerLobby {
-  id: number
-  userIds: number[]
-}
-
 export interface PokerRootStateRaw {
-  lobbies: Record<string, PokerLobby>;
+  lobbies: Record<string, {
+    id: number
+    userIds: number[]
+  }>;
 }
 
 export class PokerRootState {
-  lobbies: Record<string, PokerLobby> = {};
+  lobbies: PokerRootStateRaw['lobbies'] = {};
 
   constructor(public ctx: CustomContext) {}
 
@@ -26,25 +24,9 @@ export class PokerRootState {
     };
   }
 
-  get lobbyByGroup(): PokerLobby | undefined {
+  get lobbyByGroup() {
     if (this.ctx.chat!.type === 'private') {
       throw new Error('lobbyByGroup called in private chat');
-    }
-
-    return this.lobbies[this.ctx.chat!.id];
-  }
-
-  get lobbyByUser(): PokerLobby | undefined {
-    return Object.values(this.lobbies).find((lobby) => lobby.userIds.includes(this.ctx.from!.id));
-  }
-
-  get lobby(): PokerLobby | undefined {
-    return this.ctx.chat!.type === 'private' ? this.lobbyByUser : this.lobbyByGroup;
-  }
-
-  addUserToLobby() {
-    if (this.ctx.chat!.type === 'private') {
-      throw new Error('addUserToLobby called in private chat');
     }
 
     if (!this.lobbies[this.ctx.chat!.id]) {
@@ -54,12 +36,24 @@ export class PokerRootState {
       };
     }
 
-    this.lobbies[this.ctx.chat!.id].userIds.push(this.ctx.from!.id);
+    return this.lobbies[this.ctx.chat!.id];
   }
 
-  removeLobby() {
+  get lobbyByUser() {
+    return Object.values(this.lobbies).find((lobby) => lobby.userIds.includes(this.ctx.from!.id));
+  }
+
+  get lobby() {
+    return this.ctx.chat!.type === 'private' ? this.lobbyByUser : this.lobbyByGroup;
+  }
+
+  addUserToLobby() {
+    this.lobbyByGroup.userIds.push(this.ctx.from!.id);
+  }
+
+  resetLobby() {
     if (this.lobby) {
-      delete this.lobbies[this.lobby.id];
+      this.lobby.userIds = [];
     }
   }
 }
