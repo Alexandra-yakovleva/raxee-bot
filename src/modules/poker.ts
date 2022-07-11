@@ -64,9 +64,8 @@ export const pokerModule = () => {
   });
 
   bot.chatType('private').on('message:text', async (ctx, next) => {
-    const player = ctx.from && ctx.pokerState?.getPlayerByUserId(ctx.from.id);
-
-    if (player) {
+    if (ctx.pokerRootState.lobbyByUser) {
+      const player = ctx.pokerState.getPlayerByUserId(ctx.from.id)!;
       const message = ctx.message?.text || '';
 
       if (ctx.from.id === ctx.pokerState.activePlayer.user.id) {
