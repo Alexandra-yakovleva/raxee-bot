@@ -33,7 +33,7 @@ describe('#fromRaw', () => {
       started: true,
     });
 
-    expect(state.activePlayerIndex).toEqual(13);
+    expect(state.activePlayerIndex).toBe(13);
     expect(state.cards).toStrictEqual([new PokerCard(0, 1), new PokerCard(1, 2), new PokerCard(2, 3)]);
     expect(state.cardsOpened).toBe(2);
     expect(state.firstPlayerIndex).toBe(3);
