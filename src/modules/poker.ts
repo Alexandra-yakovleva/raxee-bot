@@ -64,27 +64,21 @@ export const pokerModule = () => {
   });
 
   bot.chatType('private').on('message:text', async (ctx, next) => {
-    if (!ctx.from) {
-      throw new Error('ctx.from is empty');
-    }
+    const player = ctx.from && ctx.pokerState?.getPlayerByUserId(ctx.from.id);
 
-    const player = ctx.pokerState.getPlayerByUserId(ctx.from.id);
+    if (player) {
+      const message = ctx.message?.text || '';
 
-    if (!player) {
-      throw new Error('player not found');
-    }
+      if (ctx.from.id === ctx.pokerState.activePlayer.user.id) {
+        const reply = await ctx.pokerState.handleMessage(player, message);
 
-    const message = ctx.message?.text || '';
-
-    if (ctx.from.id === ctx.pokerState.activePlayer.user.id) {
-      const reply = await ctx.pokerState.handleMessage(player, message);
-
-      if (reply) {
-        await ctx.replyWithMarkdown(reply);
+        if (reply) {
+          await ctx.replyWithMarkdown(reply);
+        }
+      } else {
+        await ctx.replyWithMarkdown(pokerMessages.onMessage.wrongTurn);
+        await ctx.pokerState.broadcastPlayerMessage(player, message);
       }
-    } else {
-      await ctx.replyWithMarkdown(pokerMessages.onMessage.wrongTurn);
-      await ctx.pokerState.broadcastPlayerMessage(player, message);
     }
 
     await next();
