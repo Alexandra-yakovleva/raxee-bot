@@ -6,7 +6,6 @@ import { getPokerStraight } from './getPokerStraight';
 test('should return all available straights [1]', () => {
   const cards = [
     new PokerCard(1, 8),
-    new PokerCard(2, 6),
     new PokerCard(0, 5),
     new PokerCard(0, 4),
     new PokerCard(2, 3),
@@ -16,10 +15,25 @@ test('should return all available straights [1]', () => {
   ];
 
   expect(getPokerStraight(cards)).toStrictEqual([
-    new PokerCombination(4, [new PokerCard(2, 6), new PokerCard(0, 5), new PokerCard(0, 4), new PokerCard(2, 3), new PokerCard(2, 2)]),
-    new PokerCombination(4, [new PokerCard(2, 6), new PokerCard(0, 5), new PokerCard(0, 4), new PokerCard(1, 3), new PokerCard(2, 2)]),
     new PokerCombination(4, [new PokerCard(0, 5), new PokerCard(0, 4), new PokerCard(2, 3), new PokerCard(2, 2), new PokerCard(1, 1)]),
     new PokerCombination(4, [new PokerCard(0, 5), new PokerCard(0, 4), new PokerCard(1, 3), new PokerCard(2, 2), new PokerCard(1, 1)]),
+  ]);
+});
+
+test('should return all available straights [2]', () => {
+  const cards = [
+    new PokerCard(1, 8),
+    new PokerCard(2, 6),
+    new PokerCard(0, 5),
+    new PokerCard(0, 4),
+    new PokerCard(2, 3),
+    new PokerCard(2, 2),
+    new PokerCard(1, 1),
+  ];
+
+  expect(getPokerStraight(cards)).toStrictEqual([
+    new PokerCombination(4, [new PokerCard(2, 6), new PokerCard(0, 5), new PokerCard(0, 4), new PokerCard(2, 3), new PokerCard(2, 2)]),
+    new PokerCombination(4, [new PokerCard(0, 5), new PokerCard(0, 4), new PokerCard(2, 3), new PokerCard(2, 2), new PokerCard(1, 1)]),
   ]);
 });
 
@@ -27,7 +41,6 @@ test('should cycle through aces', () => {
   const cards = [
     new PokerCard(1, 12),
     new PokerCard(2, 11),
-    new PokerCard(0, 6),
     new PokerCard(0, 5),
     new PokerCard(2, 4),
     new PokerCard(1, 2),

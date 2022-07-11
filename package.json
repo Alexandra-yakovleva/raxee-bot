@@ -42,7 +42,7 @@
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     },
-    "testRegex": "/src/.*.test.(jsx?|tsx?)$",
+    "testRegex": "/src/.*\\.test\\.(jsx?|tsx?)$",
     "testPathIgnorePatterns": [
       "/node_modules/",
       "/dist/"
