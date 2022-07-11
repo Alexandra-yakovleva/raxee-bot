@@ -129,8 +129,6 @@ export class PokerState {
   }
 
   async dealCards() {
-    await this.broadcastMessage(pokerMessages._.whoInGame(this.nonLostPlayers));
-
     const deck = shuffleItems(R.range(0, 52)).map((fullValue) => new PokerCard(fullValue % 4, Math.floor(fullValue / 4)));
 
     this.started = true;
@@ -154,7 +152,7 @@ export class PokerState {
     big.increaseBet(this.baseBet * 2);
     small.increaseBet(this.baseBet);
 
-    await this.broadcastMessage(pokerMessages._.blinds(big, small));
+    await this.broadcastMessage(pokerMessages._.roundStarted(this.nonLostPlayers, big, small));
     await this.setKeyboards();
   }
 

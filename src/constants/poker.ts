@@ -1,3 +1,5 @@
+import * as R from 'remeda';
+
 import { PokerCard } from '../classes/PokerCard';
 import { PokerPlayer } from '../classes/PokerPlayer';
 import { getMention } from '../utils';
@@ -12,34 +14,30 @@ export const pokerStrings = {
 
 export const pokerMessages = {
   _: {
-    blind: (player: PokerPlayer) => [
-      getMention(player.user),
-      `(${player.bet} 🪙)`,
-      player.balance === 0 && pokerStrings.allIn,
-    ].filter(Boolean).join(' '),
-    blinds: (big: PokerPlayer, small: PokerPlayer) => [
-      `Big: ${pokerMessages._.blind(big)}`,
-      `Small: ${pokerMessages._.blind(small)}`,
-    ].join('\n'),
     gameFinished: 'Игра окончена, всем спасибо',
     playerMessage: (player: PokerPlayer, message: string) => `${getMention(player.user)}: ${message}`,
     roundFinished: (boardCards: PokerCard[], players: PokerPlayer[]) => [
       `Стол: ${boardCards.join(' ')}`,
-      players.map((player) => [
+      ...players.map((player) => [
         `${getMention(player.user)}: ${player.cards.join(' ')}`,
         [
           player.topCombination,
           player.folded && pokerStrings.fold,
           player.win && pokerStrings.win,
-        ].filter(Boolean).join(' '),
-      ].filter(Boolean).join('\n')).join('\n\n'),
+        ].filter(R.isTruthy).join(' '),
+      ].filter(R.isTruthy).join('\n')),
     ].join('\n\n'),
-    userTurn: (player: PokerPlayer) => `Ходит ${getMention(player.user)}`,
-    whoInGame: (players: PokerPlayer[]) => [
+    roundStarted: (players: PokerPlayer[], big: PokerPlayer, small: PokerPlayer) => [
       '*Играют*',
-      ...players.map((player) => `${getMention(player.user)} (${player.balance} 🪙)`),
+      ...players.map((player) => `${getMention(player.user)} (${player.balance + player.bet} 🪙)`),
+      '',
+      '*Big blind*',
+      `${getMention(big.user)} (${big.bet} 🪙) ${big.balance === 0 ? pokerStrings.allIn : ''}`,
+      '',
+      '*Small blind*',
+      `${getMention(small.user)} (${small.bet} 🪙) ${small.balance === 0 ? pokerStrings.allIn : ''}`,
     ].join('\n'),
-    yourTurn: (player: PokerPlayer) => `Твой ход, ${getMention(player.user)}`,
+    userTurn: (player: PokerPlayer) => `Ходит ${getMention(player.user)}`,
   },
 
   onMessage: {

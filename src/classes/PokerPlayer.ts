@@ -96,27 +96,17 @@ export class PokerPlayer {
   }
 
   get keyboard(): string[][] {
-    const keyboard: string[][] = [
+    return [
       this.ctx.pokerState.cards.map((card, index) => (index < this.ctx.pokerState.cardsOpened ? card.toString() : ' ')),
       [`Банк: ${this.ctx.pokerState.bankAmount} 🪙`],
-    ];
-
-    if (!this.lost) {
-      keyboard.push([...this.cards.map(String), `${this.balance} 🪙`]);
-    }
-
-    if (this === this.ctx.pokerState.activePlayer) {
-      keyboard.push(
-        [
-          this.canFold && pokerStrings.fold,
-          this.canCheck && pokerStrings.check,
-          this.canCall && pokerStrings.call(this.callAmount),
-          this.canAllIn && pokerStrings.allIn,
-        ].filter(Boolean) as string[],
-      );
-    }
-
-    return keyboard;
+      !this.lost && [...this.cards.map(String), `${this.balance} 🪙`],
+      this === this.ctx.pokerState.activePlayer && [
+        this.canFold && pokerStrings.fold,
+        this.canCheck && pokerStrings.check,
+        this.canCall && pokerStrings.call(this.callAmount),
+        this.canAllIn && pokerStrings.allIn,
+      ].filter(R.isTruthy),
+    ].filter(R.isTruthy);
   }
 
   async sendMessage(message: string, withKeyboard = false) {
@@ -132,9 +122,7 @@ export class PokerPlayer {
 
   async setKeyboard() {
     await this.sendMessage(
-      this === this.ctx.pokerState.activePlayer
-        ? pokerMessages._.yourTurn(this.ctx.pokerState.activePlayer)
-        : pokerMessages._.userTurn(this.ctx.pokerState.activePlayer),
+      pokerMessages._.userTurn(this.ctx.pokerState.activePlayer),
       true,
     );
   }
