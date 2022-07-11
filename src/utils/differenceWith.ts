@@ -6,9 +6,9 @@ type IsEquals<T> = (a: T, b: T) => boolean;
  * Excludes the values from `other` array.
  * @param array the source array
  * @param other the values to exclude
- * @param fn the predicate
+ * @param isEquals the comparator
  * @signature
- *    R.differenceWith(array, other, fn)
+ *    R.differenceWith(array, other, isEquals)
  * @example
  *    R.differenceWith([1, 2, 3, 4], [2, 5, 3], R.equals) // => [1, 4]
  * @data_first
@@ -24,9 +24,9 @@ export function differenceWith<T>(
 /**
  * Excludes the values from `other` array.
  * @param other the values to exclude
- * @param fn the predicate
+ * @param isEquals the comparator
  * @signature
- *    R.differenceWith(other, fn)(array)
+ *    R.differenceWith(other, isEquals)(array)
  * @example
  *    R.differenceWith([2, 5, 3], R.equals)([1, 2, 3, 4]) // => [1, 4]
  *    R.pipe(

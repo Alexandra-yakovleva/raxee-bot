@@ -2,6 +2,8 @@ import * as R from 'remeda';
 
 import { PokerCombination } from '../classes/PokerCombination';
 
+import { uniqWith } from './uniqWith';
+
 export const getPokerTwoPairs = (onePair: PokerCombination[]): PokerCombination[] => {
   const combinations: PokerCombination[] = [];
 
@@ -9,7 +11,7 @@ export const getPokerTwoPairs = (onePair: PokerCombination[]): PokerCombination[
     for (let j = i + 1; j < onePair.length; j += 1) {
       const subset = [...onePair[i].cards, ...onePair[j].cards];
 
-      if (R.uniq(subset).length === 4) {
+      if (uniqWith(subset, R.equals).length === 4) {
         combinations.push(new PokerCombination(2, subset));
       }
     }
