@@ -3,18 +3,13 @@ import { PokerCard } from './PokerCard';
 export class PokerCombination {
   constructor(public level: number, public cards: PokerCard[]) {}
 
-  get firstCard() {
-    return this.cards[0];
-  }
-
-  get secondCard() {
-    if (this.level === 2) return this.cards[2];
-    if (this.level === 6) return this.cards[3];
-    return null;
-  }
-
   get weight() {
-    return this.level * 10000 + this.firstCard.value * 100 + (this.secondCard?.value || 0);
+    return this.level * 1e10
+    + (this.cards[0]?.value || 0) * 1e8
+    + (this.cards[1]?.value || 0) * 1e6
+    + (this.cards[2]?.value || 0) * 1e4
+    + (this.cards[3]?.value || 0) * 1e2
+    + (this.cards[4]?.value || 0);
   }
 
   get levelName() {
