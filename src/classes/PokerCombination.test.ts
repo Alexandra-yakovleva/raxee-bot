@@ -11,10 +11,21 @@ describe('#constructor', () => {
 });
 
 describe('#weight', () => {
-  test('should return weight', () => {
+  test('should return weight when 5 cards', () => {
     const cards = [new PokerCard(1, 7), new PokerCard(2, 4), new PokerCard(0, 12), new PokerCard(3, 2), new PokerCard(0, 5)];
     const combination = new PokerCombination(2, cards);
     expect(combination.weight).toBe(20704120205);
+  });
+
+  test('should return weight when less than 5 cards', () => {
+    const cards = [new PokerCard(1, 7), new PokerCard(2, 4)];
+    const combination = new PokerCombination(1, cards);
+    expect(combination.weight).toBe(10704000000);
+  });
+
+  test('should return weight when no cards', () => {
+    const combination = new PokerCombination(2, []);
+    expect(combination.weight).toBe(20000000000);
   });
 });
 
