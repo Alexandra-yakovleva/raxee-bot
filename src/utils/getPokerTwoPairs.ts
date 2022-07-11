@@ -1,4 +1,4 @@
-import { PokerCombination } from '../classes/pokerCombination';
+import { PokerCombination } from '../classes/PokerCombination';
 
 export const getPokerTwoPairs = (onePair: PokerCombination[]): PokerCombination[] => {
   const combinations: PokerCombination[] = [];

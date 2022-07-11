@@ -1,5 +1,5 @@
 import { PokerCard } from '../classes/PokerCard';
-import { PokerCombination } from '../classes/pokerCombination';
+import { PokerCombination } from '../classes/PokerCombination';
 import { PokerCardsSubset } from '../types/poker';
 
 import { getPokerCardsSubsets } from './getPokerCardsSubsets';

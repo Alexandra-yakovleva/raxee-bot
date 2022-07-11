@@ -1,5 +1,5 @@
 import { PokerCard } from '../classes/PokerCard';
-import { PokerCombination } from '../classes/pokerCombination';
+import { PokerCombination } from '../classes/PokerCombination';
 
 export const getPokerThreeOfAKind = (cards: PokerCard[]): PokerCombination[] => {
   const combinations: PokerCombination[] = [];

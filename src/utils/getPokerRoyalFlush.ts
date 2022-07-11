@@ -1,4 +1,4 @@
-import { PokerCombination } from '../classes/pokerCombination';
+import { PokerCombination } from '../classes/PokerCombination';
 
 export const getPokerRoyalFlush = (straightFlush: PokerCombination[]): PokerCombination[] => {
   return straightFlush
