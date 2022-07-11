@@ -63,7 +63,7 @@ describe('#lobbyByGroup', () => {
     expect(() => state.lobbyByGroup).toThrow(new Error('lobbyByGroup called in private chat'));
   });
 
-  test('should return existing lobby when lobby exits', () => {
+  test('should return lobby when lobby exits', () => {
     const state = new PokerRootState({ chat: { id: 123 } } as any);
     state.lobbies = {
       123: {
@@ -82,7 +82,7 @@ describe('#lobbyByGroup', () => {
     });
   });
 
-  test('should create and return new lobby when lobby not exits', () => {
+  test('should return undefined when lobby not exits', () => {
     const state = new PokerRootState({ chat: { id: 456 } } as any);
     state.lobbies = {
       123: {
@@ -95,25 +95,7 @@ describe('#lobbyByGroup', () => {
       },
     };
 
-    expect(state.lobbyByGroup).toStrictEqual({
-      id: 456,
-      userIds: [],
-    });
-
-    expect(state.lobbies).toStrictEqual({
-      123: {
-        id: 123,
-        userIds: [456, 789],
-      },
-      321: {
-        id: 321,
-        userIds: [321, 321],
-      },
-      456: {
-        id: 456,
-        userIds: [],
-      },
-    });
+    expect(state.lobbyByGroup).toStrictEqual(undefined);
   });
 });
 
@@ -190,7 +172,7 @@ describe('#lobby', () => {
     expect(state.lobby).toBe(undefined);
   });
 
-  test('should return existing chat lobby when chat is no private and lobby exits', () => {
+  test('should return chat lobby when chat is not private and lobby exits', () => {
     const state = new PokerRootState({ chat: { id: 123 }, from: { id: 321 } } as any);
     state.lobbies = {
       123: {
@@ -209,7 +191,7 @@ describe('#lobby', () => {
     });
   });
 
-  test('should create and return new chat lobby when chat is no private and lobby not exits', () => {
+  test('should return undefined when chat is not private and lobby not exits', () => {
     const state = new PokerRootState({ chat: { id: 456 }, from: { id: 321 } } as any);
     state.lobbies = {
       123: {
@@ -222,32 +204,14 @@ describe('#lobby', () => {
       },
     };
 
-    expect(state.lobby).toStrictEqual({
-      id: 456,
-      userIds: [],
-    });
-
-    expect(state.lobbies).toStrictEqual({
-      123: {
-        id: 123,
-        userIds: [456, 789],
-      },
-      321: {
-        id: 321,
-        userIds: [321, 321],
-      },
-      456: {
-        id: 456,
-        userIds: [],
-      },
-    });
+    expect(state.lobby).toStrictEqual(undefined);
   });
 });
 
 describe('#addUserToLobby', () => {
   test('should throw error for private chat', () => {
     const state = new PokerRootState({ chat: { id: 555, type: 'private' }, from: { id: 555 } } as any);
-    expect(() => state.lobbyByGroup).toThrow(new Error('lobbyByGroup called in private chat'));
+    expect(() => state.addUserToLobby()).toThrow(new Error('addUserToLobby called in private chat'));
   });
 
   test('should add user to existing lobby when lobby exits', () => {
@@ -309,8 +273,8 @@ describe('#addUserToLobby', () => {
   });
 });
 
-describe('#resetLobby', () => {
-  test('should reset user lobby when chat is private and user added', () => {
+describe('#removeLobby', () => {
+  test('should remove user lobby when chat is private and user added', () => {
     const state = new PokerRootState({ chat: { type: 'private' }, from: { id: 456 } } as any);
     state.lobbies = {
       123: {
@@ -323,13 +287,9 @@ describe('#resetLobby', () => {
       },
     };
 
-    state.resetLobby();
+    state.removeLobby();
 
     expect(state.lobbies).toStrictEqual({
-      123: {
-        id: 123,
-        userIds: [],
-      },
       321: {
         id: 321,
         userIds: [321, 321],
@@ -350,7 +310,7 @@ describe('#resetLobby', () => {
       },
     };
 
-    state.resetLobby();
+    state.removeLobby();
 
     expect(state.lobbies).toStrictEqual({
       123: {
@@ -364,7 +324,7 @@ describe('#resetLobby', () => {
     });
   });
 
-  test('should reset existing chat lobby when chat is no private and lobby exits', () => {
+  test('should remove chat lobby when chat is not private and lobby exits', () => {
     const state = new PokerRootState({ chat: { id: 123 }, from: { id: 321 } } as any);
     state.lobbies = {
       123: {
@@ -377,13 +337,9 @@ describe('#resetLobby', () => {
       },
     };
 
-    state.resetLobby();
+    state.removeLobby();
 
     expect(state.lobbies).toStrictEqual({
-      123: {
-        id: 123,
-        userIds: [],
-      },
       321: {
         id: 321,
         userIds: [321, 321],
@@ -391,7 +347,7 @@ describe('#resetLobby', () => {
     });
   });
 
-  test('should create new chat lobby when chat is no private and lobby not exits', () => {
+  test('should do nothing when chat is not private and lobby not exits', () => {
     const state = new PokerRootState({ chat: { id: 456 }, from: { id: 321 } } as any);
     state.lobbies = {
       123: {
@@ -404,7 +360,7 @@ describe('#resetLobby', () => {
       },
     };
 
-    state.resetLobby();
+    state.removeLobby();
 
     expect(state.lobbies).toStrictEqual({
       123: {
@@ -414,10 +370,6 @@ describe('#resetLobby', () => {
       321: {
         id: 321,
         userIds: [321, 321],
-      },
-      456: {
-        id: 456,
-        userIds: [],
       },
     });
   });
