@@ -55,20 +55,17 @@ export class PokerPlayer {
     };
   }
 
-  get combinations() {
-    return getPokerCombinations([...this.ctx.pokerState.cards, ...this.cards]);
-  }
-
-  get ownCombinations() {
-    return differenceWith(this.combinations, this.ctx.pokerState.boardCombinations, R.equals);
-  }
-
   get topCombination() {
-    return this.ownCombinations[0];
+    return R.pipe(
+      [...this.ctx.pokerState.cards, ...this.cards],
+      getPokerCombinations,
+      differenceWith(this.ctx.pokerState.boardCombinations, R.equals),
+      R.first(),
+    );
   }
 
   get win() {
-    return !this.folded && this.topCombination.weight === this.ctx.pokerState.topWeight;
+    return !this.lost && !this.folded && this.topCombination?.weight === this.ctx.pokerState.topWeight;
   }
 
   get callAmount() {
@@ -127,7 +124,7 @@ export class PokerPlayer {
     );
   }
 
-  async increaseBet(amount: number) {
+  increaseBet(amount: number) {
     amount = Math.min(amount, this.balance);
 
     this.bet += amount;
